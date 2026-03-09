@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GrowCast — Know When to Plant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" />
   <style>
     /* ── Reset & Base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1035,16 +1036,73 @@
 
     /* ── Footer ──────────────────────────────────────── */
     footer {
-      text-align: center;
-      padding: 1.5rem;
       font-size: 0.8rem;
       color: var(--text-muted);
       border-top: 1px solid var(--cream-dark);
-      margin-top: 2rem;
+      margin-top: 2.5rem;
+      background: #f7f5f0;
     }
-
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1fr;
+      gap: 2rem;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 1.5rem;
+    }
+    .footer-brand {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 0.5rem;
+    }
+    .footer-col p { line-height: 1.6; }
+    .footer-heading {
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
     footer a { color: var(--green-mid); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+    .footer-link-btn {
+      background: none; border: none; padding: 0; cursor: pointer;
+      color: var(--green-mid); font-size: 0.8rem; font-family: inherit;
+      text-align: left;
+    }
+    .footer-link-btn:hover { text-decoration: underline; }
+    .footer-legal-panel {
+      display: none;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--cream-dark);
+      position: relative;
+    }
+    .footer-legal-panel.open { display: block; }
+    .footer-legal-panel h3 { font-size: 0.9rem; color: var(--text-dark); margin-bottom: 0.75rem; }
+    .footer-legal-panel p { line-height: 1.7; margin-bottom: 0.6rem; font-size: 0.78rem; }
+    .footer-legal-panel a { color: var(--green-mid); }
+    .footer-legal-panel code { font-size: 0.75rem; background: var(--cream-dark); padding: 0.1rem 0.3rem; border-radius: 3px; }
+    .footer-legal-close {
+      position: absolute; top: 1rem; right: 1.25rem;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 0.75rem; font-family: inherit;
+    }
+    .footer-legal-close:hover { color: var(--text-dark); }
+    .footer-bottom {
+      text-align: center;
+      border-top: 1px solid var(--cream-dark);
+      padding: 0.85rem 1.5rem;
+      font-size: 0.73rem;
+      color: var(--text-muted);
+    }
+    @media (max-width: 640px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 1.25rem; padding: 1.5rem 1rem 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -1271,8 +1329,57 @@
 </main>
 
 <footer>
-  Weather data from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (free, no API key required).
-  Geocoding from <a href="https://nominatim.openstreetmap.org/" target="_blank" rel="noopener">Nominatim / OpenStreetMap</a>.
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">🌱 GrowCast</div>
+      <p>Personalized planting recommendations based on your location, local weather, and USDA hardiness zone. No account required.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-heading">Data Sources</div>
+      <ul>
+        <li><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> — weather &amp; climate data</li>
+        <li><a href="https://nominatim.openstreetmap.org/" target="_blank" rel="noopener">Nominatim / OpenStreetMap</a> — geocoding</li>
+        <li>USDA Plant Hardiness Zone data</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-heading">Legal</div>
+      <ul>
+        <li><button class="footer-link-btn" onclick="toggleLegal('privacy')">Privacy Policy</button></li>
+        <li><button class="footer-link-btn" onclick="toggleLegal('terms')">Terms of Use</button></li>
+        <li><button class="footer-link-btn" onclick="toggleLegal('disclaimer')">Disclaimer</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-legal-panel" id="legal-privacy">
+    <button class="footer-legal-close" onclick="toggleLegal('privacy')">✕ Close</button>
+    <h3>Privacy Policy</h3>
+    <p><strong>Effective date:</strong> March 2026</p>
+    <p>GrowCast does not collect, store, or transmit any personal information to any server. Your zip code is saved only in your browser's <code>localStorage</code> for convenience and never leaves your device.</p>
+    <p>When you look up a location, your browser contacts <a href="https://nominatim.openstreetmap.org/ui/about.html" target="_blank" rel="noopener">Nominatim (OpenStreetMap)</a> and <a href="https://open-meteo.com/en/terms" target="_blank" rel="noopener">Open-Meteo</a> directly. These are third-party services with their own privacy policies. GrowCast has no control over their data practices.</p>
+    <p>GrowCast uses no cookies, no analytics, no advertising, and no tracking of any kind.</p>
+  </div>
+
+  <div class="footer-legal-panel" id="legal-terms">
+    <button class="footer-legal-close" onclick="toggleLegal('terms')">✕ Close</button>
+    <h3>Terms of Use</h3>
+    <p>GrowCast is provided free of charge for personal, non-commercial use. By using this app you agree to these terms.</p>
+    <p>You may not use GrowCast to scrape, reproduce, or redistribute its recommendations at scale, or in any manner that violates the terms of the underlying data providers (Open-Meteo, OpenStreetMap/Nominatim).</p>
+    <p>These terms may change at any time. Continued use constitutes acceptance of the current terms.</p>
+  </div>
+
+  <div class="footer-legal-panel" id="legal-disclaimer">
+    <button class="footer-legal-close" onclick="toggleLegal('disclaimer')">✕ Close</button>
+    <h3>Disclaimer</h3>
+    <p>Planting recommendations on GrowCast are intended as general guidance only. Results are based on estimated soil temperatures, zip-code-level hardiness zones, and public weather forecasts — all of which carry uncertainty.</p>
+    <p>Actual growing conditions vary by microclimate, soil type, elevation, and other local factors. GrowCast accepts no liability for crop loss or damage resulting from reliance on its recommendations. Always verify local last-frost dates and consult local extension services for critical plantings.</p>
+    <p>Weather and climate data is sourced from Open-Meteo and is subject to their accuracy limitations.</p>
+  </div>
+
+  <div class="footer-bottom">
+    © <span id="copy-year"></span> GrowCast. No data collected. No cookies. No tracking.
+  </div>
 </footer>
 
 <script>
@@ -3146,13 +3253,27 @@ zipEl.addEventListener('change', () => {
   if (/^\d{5}$/.test(zipEl.value)) localStorage.setItem('growcast_zip', zipEl.value);
 });
 
-// Pre-select current month and restore saved zip
+// Pre-select current month, restore saved zip, and auto-run if we have one
 (function() {
   const now = new Date();
   document.getElementById('month').value = String(now.getMonth() + 1);
+  document.getElementById('copy-year').textContent = now.getFullYear();
   const saved = localStorage.getItem('growcast_zip');
-  if (saved) zipEl.value = saved;
+  if (saved) {
+    zipEl.value = saved;
+    handleSubmit();
+  }
 })();
+
+function toggleLegal(id) {
+  const panel = document.getElementById('legal-' + id);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.footer-legal-panel').forEach(p => p.classList.remove('open'));
+  if (!isOpen) {
+    panel.classList.add('open');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
 </script>
 
 </body>
