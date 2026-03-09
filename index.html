@@ -572,26 +572,23 @@
     }
 
     .plant-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 0.9rem;
-      align-items: start;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
     }
 
     .plant-card {
       background: #fff;
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--cream-dark);
-      padding: 1rem;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: box-shadow 0.15s;
       animation: cardIn 0.3s ease both;
+      overflow: hidden;
     }
     .plant-card:hover {
-      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
     }
 
@@ -608,26 +605,50 @@
 
     .plant-card-top {
       display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 0.85rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .plant-card.expanded .plant-card-top {
+      border-bottom: 1px solid var(--cream-dark);
     }
 
-    .plant-emoji { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+    .plant-emoji { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
+
+    /* Name + type in one tight column */
+    .plant-name-col {
+      display: flex;
+      flex-direction: column;
+      min-width: 130px;
+      flex-shrink: 0;
+    }
 
     .plant-name {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--text-dark);
-      line-height: 1.25;
+      line-height: 1.2;
     }
 
     .plant-type-tag {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
       color: var(--text-muted);
-      margin-top: 0.1rem;
+      margin-top: 0.08rem;
+    }
+
+    /* Row of summary badges shown in the collapsed header */
+    .card-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 0;
     }
 
     .plant-action {
@@ -853,31 +874,40 @@
 
     /* ── Collapsible Plant Card Details ─────────────── */
     /* Desktop: details always visible */
+    /* Details: hidden by default, shown when expanded */
     .plant-details {
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 0.5rem;
+      padding: 0.75rem 0.85rem 0.85rem;
+      overflow: hidden;
+    }
+    .plant-card.expanded .plant-details {
+      display: flex;
+      animation: detailsIn 0.18s ease;
+    }
+    @keyframes detailsIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: none; }
     }
 
-    /* Chevron shown only on mobile */
     .card-chevron {
-      display: none;
-      font-size: 1.05rem;
+      display: inline-block;
+      font-size: 1rem;
       font-weight: 900;
       color: var(--text-muted);
       transition: transform 0.2s ease;
       flex-shrink: 0;
       line-height: 1;
-      padding-left: 0.2rem;
+      margin-left: auto;
     }
     .plant-card.expanded .card-chevron { transform: rotate(90deg); }
 
-    /* Tiny action hint shown only on mobile (compact state) */
     .action-hint-mini {
-      display: none;
+      display: inline-flex;
       font-size: 0.62rem;
       font-weight: 700;
-      padding: 0.13rem 0.48rem;
+      padding: 0.13rem 0.55rem;
       border-radius: 99px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -890,31 +920,8 @@
     .action-hint-mini.wait-hint  { background: var(--cream-dark);  color: var(--text-muted); }
 
     @media (max-width: 640px) {
-      .card-chevron       { display: inline-block; }
-      .action-hint-mini   { display: inline-flex; }
-
-      /* Compact by default */
-      .plant-details {
-        display: none;
-        overflow: hidden;
-      }
-      .plant-card.expanded .plant-details {
-        display: flex;
-        animation: detailsIn 0.18s ease;
-      }
-      @keyframes detailsIn {
-        from { opacity: 0; transform: translateY(-4px); }
-        to   { opacity: 1; transform: none; }
-      }
-
-      /* Tighter card */
-      .plant-card { padding: 0.7rem 0.75rem; gap: 0; }
-      .plant-card-top { cursor: pointer; padding-bottom: 0; user-select: none; }
-      .plant-card.expanded .plant-card-top {
-        padding-bottom: 0.55rem;
-        margin-bottom: 0.4rem;
-        border-bottom: 1px solid var(--cream-dark);
-      }
+      .plant-name-col { min-width: 0; }
+      .card-summary   { display: none; }
       .plant-card.expanded .plant-details { gap: 0.45rem; }
     }
 
@@ -1014,14 +1021,14 @@
       .current-temp { font-size: 2.4rem; }
       .current-stats { gap: 0.85rem; }
 
-      .plant-grid { grid-template-columns: 1fr; gap: 0.7rem; }
+      .plant-grid { gap: 0.4rem; }
       .section-heading { font-size: 0.88rem; }
       .filter-bar { padding: 0.6rem 0.75rem; gap: 0.5rem; }
       .filter-search { font-size: 0.85rem; min-width: 120px; }
     }
     @media (max-width: 420px) {
       .logo { font-size: 1.85rem; }
-      .plant-grid { grid-template-columns: 1fr; }
+      .plant-grid { gap: 0.35rem; }
       .filter-type-group { width: 100%; }
       .rec-group-badge { font-size: 0.72rem; padding: 0.25rem 0.7rem; }
     }
@@ -2024,11 +2031,13 @@ function renderRecommendations(scored, frostInfo) {
       card.innerHTML = `
         <div class="plant-card-top" onclick="toggleCard(this.closest('.plant-card'))">
           <span class="plant-emoji">${plant.emoji}</span>
-          <div style="flex:1;min-width:0">
+          <div class="plant-name-col">
             <div class="plant-name">${plant.name}</div>
             <div class="plant-type-tag">${plant.type}</div>
-            <div class="sun-tag sun-${sunReq}">${sun.icon} ${sun.label}</div>
+          </div>
+          <div class="card-summary">
             <span class="action-hint-mini ${hintCls}">${hintLabel}</span>
+            <span class="sun-tag sun-${sunReq}">${sun.icon} ${sun.label}</span>
           </div>
           <span class="card-chevron" aria-hidden="true">›</span>
         </div>
