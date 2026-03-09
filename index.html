@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlantWise — Know When to Plant</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:   #2d5a27;
+      --green-mid:    #4a7c3f;
+      --green-light:  #7aab6e;
+      --green-pale:   #d4e9cf;
+      --cream:        #faf6ee;
+      --cream-dark:   #f0e9d8;
+      --brown:        #7a5c3a;
+      --brown-light:  #b08a5e;
+      --text-dark:    #2a2a1e;
+      --text-mid:     #4f4f3a;
+      --text-muted:   #8a8a72;
+      --shadow-sm:    0 2px 8px rgba(45, 90, 39, 0.12);
+      --shadow-md:    0 6px 24px rgba(45, 90, 39, 0.18);
+      --radius:       16px;
+      --radius-sm:    10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ──────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+      color: #fff;
+      padding: 2rem 1.5rem 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='35' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='2'/%3E%3Ccircle cx='40' cy='40' r='20' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='2'/%3E%3C/svg%3E") repeat;
+      pointer-events: none;
+    }
+
+    .logo {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      position: relative;
+    }
+
+    .logo span { color: var(--green-pale); }
+
+    .tagline {
+      font-size: 1rem;
+      opacity: 0.82;
+      margin-top: 0.3rem;
+      font-weight: 400;
+      position: relative;
+    }
+
+    /* ── Main Layout ─────────────────────────────────── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* ── Input Card ──────────────────────────────────── */
+    .input-card {
+      background: #fff;
+      border: 1.5px solid var(--green-pale);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+
+    .input-card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .fields-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .field-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .field-group input,
+    .field-group select {
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      color: var(--text-dark);
+      background: var(--cream);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      appearance: none;
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(122, 171, 110, 0.2);
+    }
+
+    .btn-primary {
+      padding: 0.75rem 1.75rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      align-self: flex-end;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ── Error Banner ────────────────────────────────── */
+    .error-banner {
+      display: none;
+      background: #fff3f3;
+      border: 1.5px solid #f5b8b8;
+      border-radius: var(--radius-sm);
+      color: #b33;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .error-banner.visible { display: block; }
+
+    /* ── Results Section ─────────────────────────────── */
+    #results {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      pointer-events: none;
+    }
+
+    #results.visible {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    /* ── Section Heading ─────────────────────────────── */
+    .section-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* ── Location Banner ─────────────────────────────── */
+    .location-banner {
+      background: linear-gradient(135deg, var(--green-pale), var(--cream-dark));
+      border: 1.5px solid var(--green-pale);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .location-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .location-details { flex: 1; }
+
+    .location-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    .location-coords {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .location-month {
+      background: var(--green-dark);
+      color: #fff;
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* ── Zone Badge ──────────────────────────────────── */
+    .zone-badge {
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .zone-badge.high     { background: var(--green-mid);  color: #fff; }
+    .zone-badge.adjusted { background: var(--brown);      color: #fff; }
+    .zone-badge.low      { background: #999;              color: #fff; }
+
+    /* ── Zone Card ───────────────────────────────────── */
+    .zone-detail {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .zone-number-display {
+      font-size: 4.5rem;
+      font-weight: 900;
+      color: var(--green-dark);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      min-width: 2ch;
+      text-align: center;
+    }
+
+    .zone-info-block { flex: 1; min-width: 160px; }
+
+    .zone-info-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .zone-info-desc {
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      margin-top: 0.3rem;
+      line-height: 1.5;
+    }
+
+    .zone-confidence-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.65rem;
+      border: 1.5px solid;
+    }
+    .zone-confidence-pill.high {
+      background: var(--green-pale);
+      border-color: var(--green-light);
+      color: var(--green-dark);
+    }
+    .zone-confidence-pill.adjusted {
+      background: #f5ece0;
+      border-color: var(--brown-light);
+      color: var(--brown);
+    }
+    .zone-confidence-pill.low {
+      background: var(--cream-dark);
+      border-color: #ccc;
+      color: var(--text-muted);
+    }
+
+    .zone-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--cream-dark);
+      flex-wrap: wrap;
+    }
+
+    /* ── Weather Cards Grid ──────────────────────────── */
+    .weather-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 560px) {
+      .weather-grid { grid-template-columns: 1fr; }
+    }
+
+    .weather-card {
+      background: #fff;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .weather-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .weather-card .card-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Current conditions */
+    .current-temp {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1;
+    }
+
+    .current-temp sup {
+      font-size: 1.4rem;
+      font-weight: 600;
+      vertical-align: super;
+    }
+
+    .current-desc {
+      color: var(--text-mid);
+      font-size: 0.95rem;
+      margin-top: 0.3rem;
+    }
+
+    .current-stats {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* Forecast bar */
+    .forecast-list {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--green-pale) transparent;
+    }
+
+    .forecast-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      min-width: 72px;
+      background: var(--cream);
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .forecast-day.today {
+      background: var(--green-pale);
+      border-color: var(--green-light);
+    }
+
+    .forecast-day-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .forecast-day.today .forecast-day-name { color: var(--green-dark); }
+
+    .forecast-icon { font-size: 1.4rem; line-height: 1; }
+
+    .forecast-hi {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .forecast-lo {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .forecast-rain {
+      font-size: 0.7rem;
+      color: #5588aa;
+      font-weight: 600;
+    }
+
+    /* Skeleton loader */
+    .skeleton {
+      background: linear-gradient(90deg, var(--cream-dark) 25%, #e8e0d0 50%, var(--cream-dark) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Spinner ─────────────────────────────────────── */
+    .spinner-wrap {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1.5rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .spinner-wrap.visible { display: flex; }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid var(--green-pale);
+      border-top-color: var(--green-mid);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Frost Warning Banner ────────────────────────── */
+    .frost-banner {
+      display: none;
+      align-items: center;
+      gap: 0.9rem;
+      background: #e8f2fb;
+      border: 1.5px solid #90bce0;
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      animation: slideDown 0.3s ease;
+    }
+    .frost-banner.visible { display: flex; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .frost-banner-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+    .frost-banner-body { flex: 1; }
+
+    .frost-banner-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a4a7a;
+    }
+
+    .frost-banner-desc {
+      font-size: 0.82rem;
+      color: #2a5a8a;
+      margin-top: 0.15rem;
+    }
+
+    /* ── Plant Recommendations ───────────────────────── */
+    .rec-group { margin-bottom: 2rem; }
+
+    .rec-group-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .rec-group-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.9rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .rec-group-badge.now  { background: #d4edda; color: #155724; border: 1.5px solid #a3d0ad; }
+    .rec-group-badge.soon { background: #fff3cd; color: #7a5200; border: 1.5px solid #f5d87e; }
+    .rec-group-badge.wait { background: #fde8e8; color: #7a2020; border: 1.5px solid #f0a8a8; }
+
+    .rec-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .plant-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .plant-card {
+      background: #fff;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--cream-dark);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: cardIn 0.3s ease both;
+    }
+    .plant-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* Stagger delays are set per-card via JS (so they work after filtering) */
+
+    .plant-card.now  { border-color: #a3d0ad; }
+    .plant-card.soon { border-color: #f5d87e; }
+    .plant-card.wait { border-color: #f0a8a8; }
+
+    .plant-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .plant-emoji { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+
+    .plant-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.25;
+    }
+
+    .plant-type-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .plant-action {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .action-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.55rem;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .action-pill.direct { background: var(--green-pale); color: var(--green-dark); }
+    .action-pill.indoor { background: #e8d5f5; color: #5a2080; }
+    .action-pill.transplant { background: #d5e8f5; color: #1a5080; }
+
+    .plant-reasons {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--cream-dark);
+      padding-top: 0.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .plant-reasons span { display: flex; align-items: baseline; gap: 0.25rem; }
+
+    .reason-ok   { color: #2a7a3a; }
+    .reason-warn { color: #8a6000; }
+    .reason-bad  { color: #8a2020; }
+
+    .plant-notes {
+      font-size: 0.72rem;
+      font-style: italic;
+      color: var(--text-muted);
+      border-top: 1px solid var(--cream-dark);
+      padding-top: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .no-plants-msg {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-style: italic;
+      padding: 0.5rem 0;
+    }
+
+    /* ── Header Plant Growth Animation ──────────────── */
+    .plant-growth {
+      position: absolute;
+      bottom: 0;
+      right: 3.5rem;
+      width: 54px;
+      height: 68px;
+      pointer-events: none;
+    }
+    .plant-growth.left { right: auto; left: 3.5rem; transform: scaleX(-1); }
+    @media (max-width: 500px) { .plant-growth { display: none; } }
+
+    .pg-stem {
+      position: absolute;
+      bottom: 0;
+      left: 23px;
+      width: 3px;
+      background: linear-gradient(to top, rgba(255,255,255,0.25), rgba(255,255,255,0.5));
+      border-radius: 3px 3px 0 0;
+      height: 0;
+      animation: pgStem 1s cubic-bezier(.2,.8,.4,1) 0.5s forwards;
+    }
+    @keyframes pgStem { to { height: 48px; } }
+
+    .pg-leaf-l, .pg-leaf-r { position: absolute; opacity: 0; }
+    .pg-leaf-l {
+      width: 18px; height: 12px;
+      bottom: 26px; left: 6px;
+      background: rgba(255,255,255,0.38);
+      border-radius: 50% 0 50% 0;
+      transform-origin: right bottom;
+      transform: scale(0) rotate(25deg);
+      animation: pgLeafL 0.42s cubic-bezier(.2,.8,.4,1) 1.3s forwards;
+    }
+    .pg-leaf-r {
+      width: 18px; height: 12px;
+      bottom: 16px; left: 24px;
+      background: rgba(255,255,255,0.28);
+      border-radius: 0 50% 0 50%;
+      transform-origin: left bottom;
+      transform: scale(0) rotate(-22deg);
+      animation: pgLeafR 0.42s cubic-bezier(.2,.8,.4,1) 1.55s forwards;
+    }
+    @keyframes pgLeafL { to { opacity: 1; transform: scale(1) rotate(25deg); } }
+    @keyframes pgLeafR { to { opacity: 1; transform: scale(1) rotate(-22deg); } }
+
+    .pg-bud {
+      position: absolute;
+      bottom: 46px; left: 17px;
+      width: 11px; height: 11px;
+      border-radius: 50% 50% 50% 0;
+      background: rgba(255,240,80,0.75);
+      transform: scale(0);
+      animation: pgBud 0.32s cubic-bezier(.2,.8,.4,1) 1.78s forwards;
+    }
+    @keyframes pgBud { to { transform: scale(1); } }
+
+    /* ── Mini Forecast Strip ─────────────────────────── */
+    .mini-forecast-wrap {
+      background: #fff;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem 0.7rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .mini-forecast-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.55rem;
+    }
+
+    /* ── Filter Bar ──────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      background: #fff;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-search {
+      flex: 1;
+      min-width: 140px;
+      padding: 0.48rem 0.75rem;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      background: var(--cream);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .filter-search:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(122,171,110,0.2);
+    }
+    .filter-type-group { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 0.38rem 0.9rem;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--cream);
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .filter-btn:hover { border-color: var(--green-light); color: var(--green-dark); }
+    .filter-btn.active { background: var(--green-dark); border-color: var(--green-dark); color: #fff; }
+    .plant-card.filtered-out { display: none !important; }
+
+    /* ── Why? Tooltip ────────────────────────────────── */
+    .why-btn {
+      padding: 0.18rem 0.6rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: 99px;
+      background: var(--cream);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    .why-btn:hover, .why-btn.active {
+      background: var(--green-pale);
+      border-color: var(--green-light);
+      color: var(--green-dark);
+    }
+    .why-tooltip {
+      display: none;
+      background: var(--text-dark);
+      color: rgba(255,255,255,0.9);
+      font-size: 0.75rem;
+      line-height: 1.55;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--radius-sm);
+      position: relative;
+      animation: tooltipIn 0.15s ease;
+    }
+    .why-tooltip.visible { display: block; }
+    @keyframes tooltipIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .why-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: 14px;
+      width: 10px; height: 10px;
+      background: var(--text-dark);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    /* ── Mobile Responsive ───────────────────────────── */
+    @media (max-width: 640px) {
+      main { padding: 1.1rem 0.85rem 3rem; }
+
+      .input-card { padding: 1.25rem 1rem; }
+      .input-card h2 { font-size: 1rem; margin-bottom: 1rem; }
+      .fields-row { flex-direction: column; gap: 0.75rem; }
+      .field-group { min-width: 0; }
+      .btn-primary { align-self: stretch; text-align: center; }
+
+      .location-banner { padding: 0.9rem 1rem; gap: 0.6rem; }
+      .location-icon { font-size: 1.6rem; }
+      .location-name { font-size: 0.95rem; }
+      .location-coords { font-size: 0.75rem; }
+      .location-month, .zone-badge { font-size: 0.78rem; padding: 0.28rem 0.65rem; }
+
+      .weather-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+      .zone-detail { gap: 1rem; }
+      .zone-number-display { font-size: 3.2rem; }
+      .zone-stats { gap: 0.85rem; }
+      .current-temp { font-size: 2.4rem; }
+      .current-stats { gap: 0.85rem; }
+
+      .plant-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 0.7rem; }
+      .section-heading { font-size: 0.88rem; }
+      .filter-bar { padding: 0.6rem 0.75rem; gap: 0.5rem; }
+      .filter-search { font-size: 0.85rem; min-width: 120px; }
+    }
+    @media (max-width: 420px) {
+      .logo { font-size: 1.85rem; }
+      .plant-grid { grid-template-columns: 1fr 1fr; }
+      .filter-type-group { width: 100%; }
+      .rec-group-badge { font-size: 0.72rem; padding: 0.25rem 0.7rem; }
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--cream-dark);
+      margin-top: 2rem;
+    }
+
+    footer a { color: var(--green-mid); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🌱 Plant<span>Wise</span></div>
+  <div class="tagline">Know exactly when to sow, grow, and harvest.</div>
+  <div class="plant-growth" aria-hidden="true">
+    <div class="pg-stem"></div>
+    <div class="pg-leaf-l"></div>
+    <div class="pg-leaf-r"></div>
+    <div class="pg-bud"></div>
+  </div>
+  <div class="plant-growth left" aria-hidden="true">
+    <div class="pg-stem"></div>
+    <div class="pg-leaf-l"></div>
+    <div class="pg-leaf-r"></div>
+    <div class="pg-bud"></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Input Card ── -->
+  <div class="input-card">
+    <h2>🗺️ Tell us where and when you are</h2>
+    <div class="fields-row">
+
+      <div class="field-group">
+        <label for="zip">US Zip Code</label>
+        <input
+          id="zip"
+          type="text"
+          inputmode="numeric"
+          placeholder="e.g. 97201"
+          maxlength="5"
+          pattern="\d{5}"
+          autocomplete="postal-code"
+        />
+      </div>
+
+      <div class="field-group">
+        <label for="month">Current Month</label>
+        <select id="month">
+          <option value="">— Select month —</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" id="go-btn" onclick="handleSubmit()">
+        Check Conditions →
+      </button>
+
+    </div>
+    <div class="error-banner" id="error-banner"></div>
+    <div class="spinner-wrap" id="spinner">
+      <div class="spinner"></div>
+      <span>Fetching weather &amp; climate data…</span>
+    </div>
+  </div>
+
+  <!-- ── Results ── -->
+  <div id="results">
+
+    <div class="location-banner">
+      <div class="location-icon">📍</div>
+      <div class="location-details">
+        <div class="location-name" id="loc-name">—</div>
+        <div class="location-coords" id="loc-coords">—</div>
+      </div>
+      <div class="location-month" id="loc-month">—</div>
+      <div class="zone-badge low" id="zone-badge">Zone —</div>
+    </div>
+
+    <!-- ── Mini 7-Day Forecast Strip ── -->
+    <div class="mini-forecast-wrap">
+      <div class="mini-forecast-label">📅 7-Day Forecast</div>
+      <div class="forecast-list" id="forecast-list"></div>
+    </div>
+
+    <p class="section-heading">🌡️ Hardiness Zone</p>
+    <div class="weather-grid">
+      <div class="weather-card full-width">
+        <div class="card-label">USDA Plant Hardiness Zone</div>
+        <div class="zone-detail">
+          <div class="zone-number-display" id="zone-number">—</div>
+          <div class="zone-info-block">
+            <div class="zone-info-name" id="zone-info-name">—</div>
+            <div class="zone-info-desc" id="zone-info-desc">—</div>
+            <div class="zone-confidence-pill low" id="zone-confidence">Estimating…</div>
+          </div>
+        </div>
+        <div class="zone-stats">
+          <div class="stat-item">
+            <span class="stat-label">Avg annual min temp</span>
+            <span class="stat-value" id="zone-avg-min">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">ZIP code estimate</span>
+            <span class="stat-value" id="zone-zip-est">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Climate estimate</span>
+            <span class="stat-value" id="zone-climate-est">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Data source</span>
+            <span class="stat-value" id="zone-source">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-heading">🌤️ Current Conditions</p>
+    <div class="weather-grid">
+
+      <div class="weather-card">
+        <div class="card-label">Right Now</div>
+        <div class="current-temp" id="cur-temp">—<sup>°F</sup></div>
+        <div class="current-desc" id="cur-desc">—</div>
+        <div class="current-stats">
+          <div class="stat-item">
+            <span class="stat-label">Feels like</span>
+            <span class="stat-value" id="cur-feels">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Humidity</span>
+            <span class="stat-value" id="cur-humidity">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Wind</span>
+            <span class="stat-value" id="cur-wind">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">UV Index</span>
+            <span class="stat-value" id="cur-uv">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-label">Today's Range</div>
+        <div class="current-temp" id="today-hi">—<sup>°F</sup></div>
+        <div class="current-desc" id="today-lo-label">Low: <span id="today-lo">—</span></div>
+        <div class="current-stats">
+          <div class="stat-item">
+            <span class="stat-label">Precip.</span>
+            <span class="stat-value" id="today-precip">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Rain chance</span>
+            <span class="stat-value" id="today-rain-prob">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Sunrise</span>
+            <span class="stat-value" id="today-sunrise">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Sunset</span>
+            <span class="stat-value" id="today-sunset">—</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Frost Warning ── -->
+    <div class="frost-banner" id="frost-banner">
+      <div class="frost-banner-icon">🥶</div>
+      <div class="frost-banner-body">
+        <div class="frost-banner-title" id="frost-title">Frost forecast in the next 7 days</div>
+        <div class="frost-banner-desc" id="frost-desc">Protect or delay transplanting frost-sensitive plants.</div>
+      </div>
+    </div>
+
+    <!-- ── Plant Recommendations ── -->
+    <p class="section-heading">🌿 Planting Recommendations</p>
+
+    <div class="filter-bar">
+      <input class="filter-search" id="plant-search" type="search" placeholder="🔍  Search plants…" />
+      <div class="filter-type-group">
+        <button class="filter-btn active" data-type="all">All</button>
+        <button class="filter-btn" data-type="vegetable">🥦 Veggies</button>
+        <button class="filter-btn" data-type="flower">🌸 Flowers</button>
+      </div>
+    </div>
+
+    <div class="rec-group" id="group-now">
+      <div class="rec-group-header">
+        <div class="rec-group-badge now">✓ Plant Now</div>
+        <span class="rec-count" id="count-now"></span>
+      </div>
+      <div class="plant-grid" id="grid-now"></div>
+    </div>
+
+    <div class="rec-group" id="group-soon">
+      <div class="rec-group-header">
+        <div class="rec-group-badge soon">⏳ Plant Soon</div>
+        <span class="rec-count" id="count-soon"></span>
+      </div>
+      <div class="plant-grid" id="grid-soon"></div>
+    </div>
+
+    <div class="rec-group" id="group-wait">
+      <div class="rec-group-header">
+        <div class="rec-group-badge wait">✗ Wait</div>
+        <span class="rec-count" id="count-wait"></span>
+      </div>
+      <div class="plant-grid" id="grid-wait"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  Weather data from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (free, no API key required).
+  Geocoding from <a href="https://nominatim.openstreetmap.org/" target="_blank" rel="noopener">Nominatim / OpenStreetMap</a>.
+</footer>
+
+<script>
+// ─── WMO weather code → human description + emoji ───────────────────────────
+const WMO_CODES = {
+  0:  ['Clear sky', '☀️'],
+  1:  ['Mainly clear', '🌤️'],
+  2:  ['Partly cloudy', '⛅'],
+  3:  ['Overcast', '☁️'],
+  45: ['Foggy', '🌫️'],
+  48: ['Icy fog', '🌫️'],
+  51: ['Light drizzle', '🌦️'],
+  53: ['Drizzle', '🌦️'],
+  55: ['Heavy drizzle', '🌧️'],
+  61: ['Light rain', '🌧️'],
+  63: ['Rain', '🌧️'],
+  65: ['Heavy rain', '🌧️'],
+  71: ['Light snow', '🌨️'],
+  73: ['Snow', '❄️'],
+  75: ['Heavy snow', '❄️'],
+  77: ['Snow grains', '🌨️'],
+  80: ['Light showers', '🌦️'],
+  81: ['Showers', '🌧️'],
+  82: ['Heavy showers', '⛈️'],
+  85: ['Snow showers', '🌨️'],
+  86: ['Heavy snow showers', '❄️'],
+  95: ['Thunderstorm', '⛈️'],
+  96: ['Thunderstorm w/ hail', '⛈️'],
+  99: ['Thunderstorm w/ hail', '⛈️'],
+};
+
+function wmoLabel(code) {
+  return WMO_CODES[code] ?? ['Unknown', '🌡️'];
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function cToF(c) { return Math.round(c * 9/5 + 32); }
+
+function fmtTime(iso) {
+  // iso like "2025-03-07T06:42"
+  const d = new Date(iso);
+  const h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function clearError() {
+  document.getElementById('error-banner').classList.remove('visible');
+}
+
+function setLoading(on) {
+  document.getElementById('spinner').classList.toggle('visible', on);
+  document.getElementById('go-btn').disabled = on;
+}
+
+function showResults(on) {
+  document.getElementById('results').classList.toggle('visible', on);
+}
+
+// ─── Geocoding: zip → lat/lon via Nominatim ──────────────────────────────────
+async function geocodeZip(zip) {
+  const url = `https://nominatim.openstreetmap.org/search?postalcode=${zip}&countrycodes=us&format=json&limit=1&addressdetails=1`;
+  const res = await fetch(url, {
+    headers: { 'Accept-Language': 'en' }
+  });
+  if (!res.ok) throw new Error('Geocoding request failed.');
+  const data = await res.json();
+  if (!data.length) throw new Error(`No location found for zip code ${zip}.`);
+  const place = data[0];
+  const addr = place.address;
+  const city  = addr.city || addr.town || addr.village || addr.county || '';
+  const state = addr.state || '';
+  const name  = [city, state].filter(Boolean).join(', ');
+  return {
+    lat: parseFloat(place.lat),
+    lon: parseFloat(place.lon),
+    name: name || place.display_name,
+  };
+}
+
+// ─── Weather: Open-Meteo ──────────────────────────────────────────────────────
+async function fetchWeather(lat, lon) {
+  const params = new URLSearchParams({
+    latitude:  lat,
+    longitude: lon,
+    temperature_unit: 'fahrenheit',
+    wind_speed_unit:  'mph',
+    precipitation_unit: 'inch',
+    timezone: 'auto',
+    current: [
+      'temperature_2m',
+      'apparent_temperature',
+      'relative_humidity_2m',
+      'wind_speed_10m',
+      'uv_index',
+      'weather_code',
+    ].join(','),
+    daily: [
+      'temperature_2m_max',
+      'temperature_2m_min',
+      'precipitation_sum',
+      'precipitation_probability_max',
+      'sunrise',
+      'sunset',
+      'weather_code',
+    ].join(','),
+    forecast_days: 7,
+  });
+
+  const url = `https://api.open-meteo.com/v1/forecast?${params}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Weather request failed.');
+  return res.json();
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function renderResults(geo, weather, monthNum, zoneResult) {
+  renderZone(zoneResult);
+
+  // ── Derive planting inputs from weather ──────────────────────────────────
+  const airTempF  = weather.current.temperature_2m;
+  const soilTempF = airTempF - 5;          // rough estimate: soil lags air by ~5°F
+  const frostInfo = detectFrost(weather.daily);
+  const zone      = Math.max(3, Math.min(9, zoneResult.zone)); // clamp to DB range 3–9
+
+  // Score every plant
+  const scored = PLANTS.map(plant => ({
+    plant,
+    result: scorePlant(plant, { zone, monthNum, soilTempF, frostInfo }),
+  }));
+
+  renderRecommendations(scored, frostInfo);
+  initFilters();
+
+  // Location banner
+  document.getElementById('loc-name').textContent   = geo.name;
+  document.getElementById('loc-coords').textContent =
+    `${geo.lat.toFixed(4)}°N, ${Math.abs(geo.lon).toFixed(4)}°${geo.lon < 0 ? 'W' : 'E'}`;
+  document.getElementById('loc-month').textContent  = MONTHS[monthNum - 1];
+
+  // Current conditions
+  const cur = weather.current;
+  const [curDesc, curEmoji] = wmoLabel(cur.weather_code);
+
+  document.getElementById('cur-temp').innerHTML =
+    `${Math.round(cur.temperature_2m)}<sup>°F</sup>`;
+  document.getElementById('cur-desc').textContent =
+    `${curEmoji} ${curDesc}`;
+  document.getElementById('cur-feels').textContent =
+    `${Math.round(cur.apparent_temperature)}°F`;
+  document.getElementById('cur-humidity').textContent =
+    `${cur.relative_humidity_2m}%`;
+  document.getElementById('cur-wind').textContent =
+    `${Math.round(cur.wind_speed_10m)} mph`;
+  document.getElementById('cur-uv').textContent =
+    cur.uv_index.toFixed(1);
+
+  // Today's daily summary (index 0)
+  const d = weather.daily;
+  document.getElementById('today-hi').innerHTML =
+    `${Math.round(d.temperature_2m_max[0])}<sup>°F</sup>`;
+  document.getElementById('today-lo').textContent =
+    `${Math.round(d.temperature_2m_min[0])}°F`;
+  document.getElementById('today-precip').textContent =
+    `${d.precipitation_sum[0].toFixed(2)}"`;
+  document.getElementById('today-rain-prob').textContent =
+    `${d.precipitation_probability_max[0]}%`;
+  document.getElementById('today-sunrise').textContent =
+    fmtTime(d.sunrise[0]);
+  document.getElementById('today-sunset').textContent =
+    fmtTime(d.sunset[0]);
+
+  // 7-day forecast
+  const list = document.getElementById('forecast-list');
+  list.innerHTML = '';
+  d.time.forEach((dateStr, i) => {
+    const dt = new Date(dateStr + 'T12:00:00');
+    const dayName = i === 0 ? 'Today' : DAY_NAMES[dt.getDay()];
+    const [, icon] = wmoLabel(d.weather_code[i]);
+    const rain = d.precipitation_probability_max[i];
+
+    const card = document.createElement('div');
+    card.className = 'forecast-day' + (i === 0 ? ' today' : '');
+    card.innerHTML = `
+      <span class="forecast-day-name">${dayName}</span>
+      <span class="forecast-icon">${icon}</span>
+      <span class="forecast-hi">${Math.round(d.temperature_2m_max[i])}°</span>
+      <span class="forecast-lo">${Math.round(d.temperature_2m_min[i])}°</span>
+      <span class="forecast-rain">${rain}% 💧</span>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ─── Main handler ─────────────────────────────────────────────────────────────
+async function handleSubmit() {
+  clearError();
+
+  const zip   = document.getElementById('zip').value.trim();
+  const month = document.getElementById('month').value;
+
+  if (!/^\d{5}$/.test(zip)) {
+    showError('Please enter a valid 5-digit US zip code.');
+    return;
+  }
+  if (!month) {
+    showError('Please select the current month.');
+    return;
+  }
+
+  setLoading(true);
+  showResults(false);
+
+  try {
+    const geo     = await geocodeZip(zip);
+    const zipZone = zoneFromZip(zip);
+
+    // Fetch weather forecast and climate history in parallel
+    const [weather, climateDaily] = await Promise.all([
+      fetchWeather(geo.lat, geo.lon),
+      fetchClimateHistory(geo.lat, geo.lon),
+    ]);
+
+    const climateResult = climateZoneFromHistory(climateDaily);
+    const zoneResult    = crossValidateZone(zipZone, climateResult);
+
+    renderResults(geo, weather, parseInt(month), zoneResult);
+    showResults(true);
+  } catch (err) {
+    showError(err.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ─── ZIP → USDA Zone Lookup ──────────────────────────────────────────────────
+// Sorted array of [maxPrefixInclusive, zone] pairs (3-digit zip prefix as int).
+// Linear scan: return zone for the first entry whose maxPrefix >= query prefix.
+// Sources: USDA zone maps, NOAA state climate data, regional horticulture guides.
+const ZIP_ZONE_RANGES = [
+  //  max   zone  region
+  [   9,    13 ], // 000-009  Puerto Rico / USVI
+  [  19,     6 ], // 010-019  Western Massachusetts
+  [  29,     7 ], // 020-029  Eastern MA / Rhode Island
+  [  38,     5 ], // 030-038  New Hampshire
+  [  49,     5 ], // 039-049  Maine
+  [  59,     5 ], // 050-059  Vermont
+  [  68,     6 ], // 060-068  Connecticut
+  [  89,     7 ], // 070-089  New Jersey
+  [  99,     6 ], // 090-099  Military / misc APO
+  [ 119,     7 ], // 100-119  New York City metro
+  [ 149,     5 ], // 120-149  Upstate New York
+  [ 196,     6 ], // 150-196  Pennsylvania
+  [ 199,     7 ], // 197-199  Delaware
+  [ 219,     7 ], // 200-219  DC / Maryland
+  [ 246,     7 ], // 220-246  Virginia
+  [ 268,     6 ], // 247-268  West Virginia
+  [ 289,     8 ], // 270-289  North Carolina
+  [ 299,     8 ], // 290-299  South Carolina
+  [ 319,     8 ], // 300-319  Georgia
+  [ 349,     9 ], // 320-349  Florida
+  [ 369,     8 ], // 350-369  Alabama
+  [ 385,     7 ], // 370-385  Tennessee
+  [ 399,     8 ], // 386-399  Mississippi / S. Georgia
+  [ 427,     6 ], // 400-427  Kentucky
+  [ 458,     6 ], // 430-458  Ohio
+  [ 479,     6 ], // 460-479  Indiana
+  [ 499,     5 ], // 480-499  Michigan
+  [ 528,     5 ], // 500-528  Iowa
+  [ 549,     4 ], // 530-549  Wisconsin
+  [ 567,     4 ], // 550-567  Minnesota
+  [ 577,     4 ], // 570-577  South Dakota
+  [ 588,     3 ], // 580-588  North Dakota
+  [ 599,     4 ], // 590-599  Montana
+  [ 629,     5 ], // 600-629  Illinois
+  [ 658,     6 ], // 630-658  Missouri
+  [ 679,     6 ], // 660-679  Kansas
+  [ 693,     5 ], // 680-693  Nebraska
+  [ 714,     9 ], // 700-714  Louisiana
+  [ 729,     7 ], // 715-729  Arkansas
+  [ 749,     7 ], // 730-749  Oklahoma
+  [ 767,     7 ], // 750-767  North Texas (Dallas / Panhandle)
+  [ 779,     8 ], // 768-779  Central Texas
+  [ 799,     9 ], // 780-799  South Texas / San Antonio
+  [ 816,     5 ], // 800-816  Colorado (Front Range / mountains)
+  [ 831,     4 ], // 820-831  Wyoming
+  [ 838,     5 ], // 832-838  Idaho
+  [ 847,     6 ], // 840-847  Utah
+  [ 865,     8 ], // 850-865  Arizona (Phoenix metro; Flagstaff ~6)
+  [ 884,     7 ], // 870-884  New Mexico
+  [ 898,     8 ], // 885-898  Nevada (Las Vegas 9, Reno 7 → avg 8)
+  [ 900,     8 ], // 899-900  misc
+  [ 928,    10 ], // 900-928  Southern California
+  [ 966,     9 ], // 929-966  Central & Northern California / Central Valley
+  [ 968,    11 ], // 967-968  Hawaii
+  [ 979,     8 ], // 969-979  Oregon
+  [ 994,     8 ], // 980-994  Washington
+  [ 999,     4 ], // 995-999  Alaska (south coastal; interior is 2-3)
+];
+
+// USDA zone descriptions keyed by integer zone number
+const ZONE_INFO = {
+  2:  { range: 'Below −50°F',   desc: 'Extreme arctic conditions. Very few food crops survive outdoors.' },
+  3:  { range: '−40 to −30°F', desc: 'Harsh winters with a ~90-day frost-free season. Cold-hardy crops only.' },
+  4:  { range: '−30 to −20°F', desc: 'Cold winters; ~120-day season. Hardy vegetables and robust perennials succeed.' },
+  5:  { range: '−20 to −10°F', desc: 'Cool winters; ~150-day season. Most common vegetables thrive here.' },
+  6:  { range: '−10 to 0°F',   desc: '~180-day growing season — excellent for a wide range of vegetables and flowers.' },
+  7:  { range: '0 to 10°F',    desc: 'Mild winters; long season. Some tender perennials overwinter with mulch.' },
+  8:  { range: '10 to 20°F',   desc: 'Warm, long season. Two vegetable crops often possible — spring and fall.' },
+  9:  { range: '20 to 30°F',   desc: 'Near frost-free winters. Year-round vegetable gardening is possible.' },
+  10: { range: '30 to 40°F',   desc: 'Frost is rare. Tropical and subtropical plants thrive year-round.' },
+  11: { range: 'Above 40°F',   desc: 'Fully tropical. No frost risk; continuous growing possible all year.' },
+};
+
+function zoneFromZip(zip) {
+  const prefix = parseInt(zip.slice(0, 3), 10);
+  for (const [max, zone] of ZIP_ZONE_RANGES) {
+    if (prefix <= max) return zone;
+  }
+  return 6; // fallback if somehow not matched
+}
+
+// ─── USDA Zone from Avg Annual Minimum Temp (°F) ─────────────────────────────
+function usdaZoneFromTemp(avgAnnualMinF) {
+  if (avgAnnualMinF >= 40) return 11;
+  if (avgAnnualMinF >= 30) return 10;
+  if (avgAnnualMinF >= 20) return 9;
+  if (avgAnnualMinF >= 10) return 8;
+  if (avgAnnualMinF >=  0) return 7;
+  if (avgAnnualMinF >= -10) return 6;
+  if (avgAnnualMinF >= -20) return 5;
+  if (avgAnnualMinF >= -30) return 4;
+  if (avgAnnualMinF >= -40) return 3;
+  return 2;
+}
+
+// ─── Open-Meteo Archive: fetch 6 years of daily min temps ────────────────────
+async function fetchClimateHistory(lat, lon) {
+  try {
+    const params = new URLSearchParams({
+      latitude:         lat,
+      longitude:        lon,
+      start_date:       '2018-01-01',
+      end_date:         '2023-12-31',
+      daily:            'temperature_2m_min',
+      temperature_unit: 'fahrenheit',
+      timezone:         'auto',
+    });
+    const res = await fetch(
+      `https://archive-api.open-meteo.com/v1/archive?${params}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.daily ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Derive zone + avg-annual-min from the archive daily payload
+function climateZoneFromHistory(daily) {
+  if (!daily?.time?.length || !daily.temperature_2m_min) return null;
+
+  // Find the coldest day for each calendar year
+  const byYear = {};
+  daily.time.forEach((dateStr, i) => {
+    const temp = daily.temperature_2m_min[i];
+    if (temp === null || temp === undefined) return;
+    const year = dateStr.slice(0, 4);
+    if (!(year in byYear) || temp < byYear[year]) byYear[year] = temp;
+  });
+
+  const annualMins = Object.values(byYear);
+  if (!annualMins.length) return null;
+
+  const avgMin = annualMins.reduce((a, b) => a + b, 0) / annualMins.length;
+  return { zone: usdaZoneFromTemp(avgMin), avgMin: Math.round(avgMin) };
+}
+
+// ─── Cross-validate ZIP estimate vs. historical climate ──────────────────────
+function crossValidateZone(zipZone, climateResult) {
+  if (!climateResult) {
+    return {
+      zone: zipZone, confidence: 'low',
+      source: 'ZIP code prefix only',
+      avgMin: null, zipEst: zipZone, climateEst: null,
+    };
+  }
+
+  const { zone: climateZone, avgMin } = climateResult;
+  const diff = Math.abs(zipZone - climateZone);
+
+  if (diff === 0) {
+    return {
+      zone: climateZone, confidence: 'high',
+      source: 'ZIP + 6-yr climate record',
+      avgMin, zipEst: zipZone, climateEst: climateZone,
+    };
+  }
+  // 1-zone disagreement is common at region boundaries; still trust climate data
+  return {
+    zone: climateZone, confidence: 'adjusted',
+    source: diff === 1 ? 'Climate-adjusted (boundary region)' : 'Climate data (overrides ZIP)',
+    avgMin, zipEst: zipZone, climateEst: climateZone,
+  };
+}
+
+// ─── Render zone section ──────────────────────────────────────────────────────
+function renderZone(zoneResult) {
+  const { zone, confidence, source, avgMin, zipEst, climateEst } = zoneResult;
+  const info = ZONE_INFO[zone] ?? ZONE_INFO[6];
+  const confLabel = { high: '✓ High confidence', adjusted: '⚠ Climate-adjusted', low: '? ZIP estimate only' };
+
+  // Badge in location banner
+  const badge = document.getElementById('zone-badge');
+  badge.textContent = `Zone ${zone}`;
+  badge.className   = `zone-badge ${confidence}`;
+
+  // Zone card
+  document.getElementById('zone-number').textContent       = zone;
+  document.getElementById('zone-info-name').textContent    = `USDA Zone ${zone} — Avg winter low ${info.range}`;
+  document.getElementById('zone-info-desc').textContent    = info.desc;
+
+  const pill = document.getElementById('zone-confidence');
+  pill.textContent = confLabel[confidence];
+  pill.className   = `zone-confidence-pill ${confidence}`;
+
+  document.getElementById('zone-avg-min').textContent     = avgMin !== null ? `${avgMin}°F` : 'N/A';
+  document.getElementById('zone-zip-est').textContent     = `Zone ${zipEst}`;
+  document.getElementById('zone-climate-est').textContent = climateEst !== null ? `Zone ${climateEst}` : 'Unavailable';
+  document.getElementById('zone-source').textContent      = source;
+}
+
+// ─── Frost Detection ─────────────────────────────────────────────────────────
+// Returns { hasFrost, firstFrostDate, lowestMin } from a daily forecast payload.
+function detectFrost(daily) {
+  const FROST_F = 32;
+  let hasFrost = false, firstFrostDate = null, lowestMin = Infinity;
+
+  daily.time.forEach((dateStr, i) => {
+    const lo = daily.temperature_2m_min[i];
+    if (lo < lowestMin) lowestMin = lo;
+    if (lo <= FROST_F && !hasFrost) {
+      hasFrost = true;
+      firstFrostDate = dateStr;
+    }
+  });
+
+  return { hasFrost, firstFrostDate, lowestMin };
+}
+
+// ─── Scoring Engine ───────────────────────────────────────────────────────────
+// Returns 'now' | 'soon' | 'wait' for a single plant given current conditions.
+// Also returns a reasons array and the suggested action(s).
+
+function scorePlant(plant, { zone, monthNum, soilTempF, frostInfo }) {
+  const zoneData    = plant.zones[zone] ?? plant.zones[5]; // fallback to zone 5
+  const reasons     = [];
+  let strikes       = 0;   // hard blockers → 'wait'
+  let warnings      = 0;   // soft issues  → nudges toward 'soon'
+
+  // ── 1. Calendar window check ─────────────────────────────────────────────
+  const directMonths    = zoneData.directSow    ?? [];
+  const indoorMonths    = zoneData.indoorStart  ?? [];
+  const transplantMonths= zoneData.transplant   ?? [];
+
+  const nextMonth  = monthNum === 12 ? 1 : monthNum + 1;
+  const next2Month = nextMonth  === 12 ? 1 : nextMonth + 1;
+
+  const inDirectNow    = directMonths.includes(monthNum);
+  const inIndoorNow    = indoorMonths.includes(monthNum);
+  const inTransplantNow= transplantMonths.includes(monthNum);
+  const inWindowNow    = inDirectNow || inIndoorNow || inTransplantNow;
+
+  const inWindowSoon   =
+    directMonths.includes(nextMonth)     || directMonths.includes(next2Month) ||
+    indoorMonths.includes(nextMonth)     || indoorMonths.includes(next2Month) ||
+    transplantMonths.includes(nextMonth) || transplantMonths.includes(next2Month);
+
+  if (inWindowNow) {
+    const actions = [];
+    if (inDirectNow)     actions.push('direct sow');
+    if (inIndoorNow)     actions.push('start indoors');
+    if (inTransplantNow) actions.push('transplant');
+    reasons.push({ ok: true,  text: `In calendar window (${actions.join(' / ')})` });
+  } else if (inWindowSoon) {
+    reasons.push({ ok: null, text: 'Calendar window opens in ≤2 months' });
+    warnings++;
+  } else {
+    reasons.push({ ok: false, text: 'Outside calendar window for your zone' });
+    strikes++;
+  }
+
+  // ── 2. Frost check ───────────────────────────────────────────────────────
+  if (plant.frostSensitive && frostInfo.hasFrost) {
+    reasons.push({ ok: false, text: `Frost forecast (low: ${Math.round(frostInfo.lowestMin)}°F)` });
+    // Only a hard blocker for outdoor direct sow / transplant; indoor start is fine
+    if (inDirectNow || inTransplantNow) strikes++;
+    else warnings++;
+  } else if (plant.frostSensitive && !frostInfo.hasFrost) {
+    reasons.push({ ok: true, text: 'No frost in 7-day forecast' });
+  } else {
+    reasons.push({ ok: true, text: 'Frost-tolerant' });
+  }
+
+  // ── 3. Soil temperature check ────────────────────────────────────────────
+  const [soilMin, soilMax] = plant.soilTemp;
+  if (soilTempF >= soilMin && soilTempF <= soilMax) {
+    reasons.push({ ok: true,  text: `Soil ~${Math.round(soilTempF)}°F ✓ (wants ${soilMin}–${soilMax}°F)` });
+  } else if (soilTempF < soilMin) {
+    const deficit = soilMin - soilTempF;
+    if (deficit > 15) {
+      reasons.push({ ok: false, text: `Soil ~${Math.round(soilTempF)}°F too cold (needs ${soilMin}°F+)` });
+      strikes++;
+    } else {
+      reasons.push({ ok: null, text: `Soil ~${Math.round(soilTempF)}°F a bit cold (needs ${soilMin}°F+)` });
+      warnings++;
+    }
+  } else {
+    reasons.push({ ok: null, text: `Soil ~${Math.round(soilTempF)}°F warm (wants ≤${soilMax}°F)` });
+    warnings++;
+  }
+
+  // ── Determine status ─────────────────────────────────────────────────────
+  let status;
+  if (strikes > 0) {
+    status = 'wait';
+  } else if (warnings > 0 || !inWindowNow) {
+    status = 'soon';
+  } else {
+    status = 'now';
+  }
+
+  // ── Resolve action label ─────────────────────────────────────────────────
+  const actions = [];
+  if (inIndoorNow)                                actions.push({ label: 'Start indoors', cls: 'indoor' });
+  if (inTransplantNow && !frostInfo.hasFrost)     actions.push({ label: 'Transplant', cls: 'transplant' });
+  if (inDirectNow && !(plant.frostSensitive && frostInfo.hasFrost))
+                                                  actions.push({ label: 'Direct sow', cls: 'direct' });
+  // Soon fallback labels
+  if (!actions.length && status === 'soon') {
+    if (indoorMonths.includes(nextMonth) || indoorMonths.includes(next2Month))
+      actions.push({ label: 'Start indoors soon', cls: 'indoor' });
+    if (directMonths.includes(nextMonth) || directMonths.includes(next2Month))
+      actions.push({ label: 'Direct sow soon', cls: 'direct' });
+    if (transplantMonths.includes(nextMonth) || transplantMonths.includes(next2Month))
+      actions.push({ label: 'Transplant soon', cls: 'transplant' });
+  }
+
+  return { status, reasons, actions };
+}
+
+// ─── Plain-English "Why?" Explanation ────────────────────────────────────────
+function buildWhyText(plant, result) {
+  const { status, reasons, actions } = result;
+  const n = plant.name;
+  const parts = [];
+
+  if (status === 'now') {
+    parts.push(`Now is a great time to plant ${n}!`);
+  } else if (status === 'soon') {
+    parts.push(`${n} isn't quite ready yet, but conditions are improving.`);
+  } else {
+    parts.push(`Hold off on ${n} — conditions aren't right yet.`);
+  }
+
+  reasons.forEach(r => {
+    const pfx = r.ok === true ? '✓' : r.ok === false ? '✗' : '⚠';
+    parts.push(`${pfx} ${r.text}.`);
+  });
+
+  if (actions.length) {
+    parts.push(`Suggested: ${actions.map(a => a.label).join(' or ')}.`);
+  } else if (status === 'wait') {
+    parts.push('Check back when soil warms and frost risk passes.');
+  }
+
+  if (plant.frostSensitive && status !== 'wait') {
+    parts.push(`⚠ ${n} is frost-sensitive — cover or bring indoors if temps approach 32°F.`);
+  }
+
+  return parts.join(' ');
+}
+
+// ─── Tooltip Toggle ───────────────────────────────────────────────────────────
+function toggleWhy(btn) {
+  const card    = btn.closest('.plant-card');
+  const tooltip = card.querySelector('.why-tooltip');
+  const isOpen  = tooltip.classList.contains('visible');
+
+  // Close any open tooltip first
+  document.querySelectorAll('.why-tooltip.visible').forEach(t => {
+    t.classList.remove('visible');
+    t.closest('.plant-card').querySelector('.why-btn').classList.remove('active');
+  });
+
+  if (!isOpen) {
+    tooltip.classList.add('visible');
+    btn.classList.add('active');
+  }
+}
+
+// ─── Search & Filter Bar ──────────────────────────────────────────────────────
+function initFilters() {
+  const searchEl = document.getElementById('plant-search');
+  const typeBtns = document.querySelectorAll('.filter-btn');
+  let activeType  = 'all';
+  let searchQuery = '';
+
+  function applyFilter() {
+    document.querySelectorAll('.plant-card').forEach(card => {
+      const nameMatch = !searchQuery || card.dataset.name.includes(searchQuery);
+      const typeMatch = activeType === 'all' || card.dataset.type === activeType;
+      card.classList.toggle('filtered-out', !(nameMatch && typeMatch));
+    });
+
+    // Update counts to reflect filtered state
+    ['now', 'soon', 'wait'].forEach(status => {
+      const grid    = document.getElementById(`grid-${status}`);
+      const counter = document.getElementById(`count-${status}`);
+      const total   = grid.querySelectorAll('.plant-card').length;
+      const visible = grid.querySelectorAll('.plant-card:not(.filtered-out)').length;
+      counter.textContent = visible === total
+        ? `${total} plant${total !== 1 ? 's' : ''}`
+        : `${visible} of ${total} shown`;
+    });
+  }
+
+  // Reset on each new result render
+  searchEl.value = '';
+  searchQuery = '';
+  activeType  = 'all';
+  typeBtns.forEach(b => b.classList.toggle('active', b.dataset.type === 'all'));
+
+  searchEl.oninput = () => {
+    searchQuery = searchEl.value.trim().toLowerCase();
+    applyFilter();
+  };
+
+  typeBtns.forEach(btn => {
+    btn.onclick = () => {
+      typeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeType = btn.dataset.type;
+      applyFilter();
+    };
+  });
+}
+
+// ─── Render Recommendations ───────────────────────────────────────────────────
+function renderRecommendations(scored, frostInfo) {
+  // Frost banner
+  const frostBanner = document.getElementById('frost-banner');
+  if (frostInfo.hasFrost) {
+    const dt   = new Date(frostInfo.firstFrostDate + 'T12:00:00');
+    const days = DAY_NAMES[dt.getDay()];
+    document.getElementById('frost-title').textContent =
+      `Frost expected ${days} (low: ${Math.round(frostInfo.lowestMin)}°F)`;
+    document.getElementById('frost-desc').textContent =
+      'Delay transplanting frost-sensitive plants. Starting indoors is still fine.';
+    frostBanner.classList.add('visible');
+  } else {
+    frostBanner.classList.remove('visible');
+  }
+
+  const groups = { now: [], soon: [], wait: [] };
+  scored.forEach(s => groups[s.result.status].push(s));
+
+  ['now', 'soon', 'wait'].forEach(status => {
+    const grid    = document.getElementById(`grid-${status}`);
+    const counter = document.getElementById(`count-${status}`);
+    const plants  = groups[status];
+    counter.textContent = `${plants.length} plant${plants.length !== 1 ? 's' : ''}`;
+    grid.innerHTML = '';
+
+    if (!plants.length) {
+      grid.innerHTML = `<p class="no-plants-msg">None in this category right now.</p>`;
+      return;
+    }
+
+    plants.forEach(({ plant, result }, idx) => {
+      const { reasons, actions } = result;
+      const whyText = buildWhyText(plant, result);
+
+      const card = document.createElement('div');
+      card.className = `plant-card ${status}`;
+      card.dataset.name = plant.name.toLowerCase();
+      card.dataset.type = plant.type;
+      // JS-driven stagger so animation works correctly after filter resets
+      card.style.animationDelay = `${Math.min(idx, 15) * 0.04}s`;
+
+      const actionHTML = actions.length
+        ? actions.map(a => `<span class="action-pill ${a.cls}">${a.label}</span>`).join('')
+        : '<span style="color:var(--text-muted);font-size:0.72rem">Not recommended now</span>';
+
+      const reasonHTML = reasons.map(r => {
+        const cls = r.ok === true ? 'reason-ok' : r.ok === false ? 'reason-bad' : 'reason-warn';
+        const ico = r.ok === true ? '✓' : r.ok === false ? '✗' : '~';
+        return `<span class="${cls}"><b>${ico}</b> ${r.text}</span>`;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="plant-card-top">
+          <span class="plant-emoji">${plant.emoji}</span>
+          <div style="flex:1;min-width:0">
+            <div class="plant-name">${plant.name}</div>
+            <div class="plant-type-tag">${plant.type}</div>
+          </div>
+          <button class="why-btn" onclick="toggleWhy(this)" aria-label="Explain recommendation">Why?</button>
+        </div>
+        <div class="why-tooltip">${whyText}</div>
+        <div class="plant-action">${actionHTML}</div>
+        <div class="plant-reasons">${reasonHTML}</div>
+        <div class="plant-notes">${plant.notes}</div>
+      `;
+      grid.appendChild(card);
+    });
+  });
+}
+
+// ─── Planting Database ───────────────────────────────────────────────────────
+//
+// soilTemp:  [min, max] °F — ideal germination soil temperature range
+// airTemp:   [min, max] °F — ideal growing air temperature range
+// frostSensitive: true = dies on frost; false = tolerates light frost
+// zones: keyed 5–9, each zone has:
+//   directSow:   months (1-based) to direct-sow outdoors
+//   indoorStart: months to start seeds indoors (empty = not recommended / skip)
+//   transplant:  months to transplant seedlings outdoors (empty = direct sow only)
+// sowDepth: planting depth in inches (for reference)
+// daysToHarvest: rough range [min, max] days from transplant/direct sow
+// notes: one brief grower tip
+
+const PLANTS = [
+  // ── VEGETABLES (20) ────────────────────────────────────────────────────────
+
+  {
+    id: 'tomato',
+    name: 'Tomato',
+    emoji: '🍅',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [60, 85],
+    airTemp:  [65, 85],
+    sowDepth: 0.25,
+    daysToHarvest: [60, 85],
+    notes: 'Always start indoors; transplant after last frost when nights stay above 50°F.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [5, 6],    directSow: [] },
+      6: { indoorStart: [3, 4],    transplant: [5, 6],    directSow: [] },
+      7: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [] },
+      8: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [] },
+      9: { indoorStart: [1],       transplant: [2, 3],    directSow: [] },
+    },
+  },
+
+  {
+    id: 'pepper',
+    name: 'Pepper',
+    emoji: '🫑',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [70, 85],
+    airTemp:  [70, 85],
+    sowDepth: 0.25,
+    daysToHarvest: [70, 90],
+    notes: 'Peppers need warm soil — wait until soil is reliably above 65°F before transplanting.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [6],       directSow: [] },
+      6: { indoorStart: [3, 4],    transplant: [5, 6],    directSow: [] },
+      7: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [] },
+      8: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [] },
+      9: { indoorStart: [1],       transplant: [2, 3],    directSow: [] },
+    },
+  },
+
+  {
+    id: 'zucchini',
+    name: 'Zucchini',
+    emoji: '🥒',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [60, 95],
+    airTemp:  [65, 80],
+    sowDepth: 1,
+    daysToHarvest: [50, 65],
+    notes: 'Direct sow preferred — zucchini dislikes transplanting. Sow 2–3 seeds per hill.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5],       directSow: [5, 6] },
+      6: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [4, 5] },
+      7: { indoorStart: [3],       transplant: [4],       directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 8, 9] },
+    },
+  },
+
+  {
+    id: 'carrot',
+    name: 'Carrot',
+    emoji: '🥕',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 85],
+    airTemp:  [55, 75],
+    sowDepth: 0.25,
+    daysToHarvest: [70, 80],
+    notes: 'Direct sow only — taproots cannot be transplanted. Thin to 2" apart after sprouting.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [4, 5, 6, 7, 8] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5, 7, 8] },
+      7: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [1, 2, 10, 11] },
+    },
+  },
+
+  {
+    id: 'lettuce',
+    name: 'Lettuce',
+    emoji: '🥬',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [40, 75],
+    airTemp:  [45, 65],
+    sowDepth: 0.13,
+    daysToHarvest: [45, 60],
+    notes: 'Cool-season crop; bolts in heat. Sow in spring and again in late summer for fall harvest.',
+    zones: {
+      5: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [4, 8, 9] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [1, 2],    transplant: [2, 3],    directSow: [2, 3, 9, 10] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+      9: { indoorStart: [],        transplant: [],         directSow: [1, 2, 10, 11] },
+    },
+  },
+
+  {
+    id: 'spinach',
+    name: 'Spinach',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [35, 65],
+    airTemp:  [35, 65],
+    sowDepth: 0.5,
+    daysToHarvest: [40, 50],
+    notes: 'Very frost-hardy; survives light freezes. Bolts quickly in temperatures above 75°F.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [4, 5, 8, 9] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9, 10] },
+      7: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9, 10] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+      9: { indoorStart: [],        transplant: [],         directSow: [1, 2, 10, 11] },
+    },
+  },
+
+  {
+    id: 'cucumber',
+    name: 'Cucumber',
+    emoji: '🥒',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [60, 95],
+    airTemp:  [65, 85],
+    sowDepth: 0.5,
+    daysToHarvest: [50, 70],
+    notes: 'Loves heat. Direct sow after soil warms; or start indoors 3 weeks before transplant date.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [4],       transplant: [5],       directSow: [5, 6] },
+      7: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+    },
+  },
+
+  {
+    id: 'green-bean',
+    name: 'Green Bean',
+    emoji: '🫘',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [60, 85],
+    airTemp:  [65, 85],
+    sowDepth: 1,
+    daysToHarvest: [50, 60],
+    notes: 'Direct sow only — beans hate transplanting. Successive sow every 2 weeks for continuous harvest.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [5, 6, 7] },
+      6: { indoorStart: [],        transplant: [],         directSow: [4, 5, 6, 7] },
+      7: { indoorStart: [],        transplant: [],         directSow: [4, 5, 7, 8] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+    },
+  },
+
+  {
+    id: 'broccoli',
+    name: 'Broccoli',
+    emoji: '🥦',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 85],
+    airTemp:  [45, 65],
+    sowDepth: 0.5,
+    daysToHarvest: [60, 80],
+    notes: 'Cool-season crop; heads develop best when temps drop below 65°F. Tolerates light frost.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [7, 8] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [7, 8] },
+      7: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [8, 9] },
+      8: { indoorStart: [8, 9],    transplant: [9, 10],   directSow: [9, 10] },
+      9: { indoorStart: [8, 9],    transplant: [9, 10],   directSow: [9, 10] },
+    },
+  },
+
+  {
+    id: 'kale',
+    name: 'Kale',
+    emoji: '🥬',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 85],
+    airTemp:  [40, 65],
+    sowDepth: 0.5,
+    daysToHarvest: [55, 75],
+    notes: 'Frost improves sweetness. One of the hardiest vegetables — survives into the 20s °F.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [7, 8] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [7, 8] },
+      7: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [8, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [9, 10, 11] },
+      9: { indoorStart: [],        transplant: [],         directSow: [9, 10, 11] },
+    },
+  },
+
+  {
+    id: 'onion',
+    name: 'Onion',
+    emoji: '🧅',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [50, 80],
+    airTemp:  [45, 75],
+    sowDepth: 0.5,
+    daysToHarvest: [100, 120],
+    notes: 'Long season crop; starting from sets or transplants is far easier than seed.',
+    zones: {
+      5: { indoorStart: [1, 2],    transplant: [4, 5],    directSow: [4] },
+      6: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [3, 4] },
+      7: { indoorStart: [12, 1],   transplant: [2, 3],    directSow: [2, 3] },
+      8: { indoorStart: [11, 12],  transplant: [1, 2],    directSow: [1, 2] },
+      9: { indoorStart: [10, 11],  transplant: [12, 1],   directSow: [11, 12] },
+    },
+  },
+
+  {
+    id: 'garlic',
+    name: 'Garlic',
+    emoji: '🧄',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [50, 65],
+    airTemp:  [32, 65],
+    sowDepth: 2,
+    daysToHarvest: [240, 270],
+    notes: 'Plant cloves in fall for summer harvest. Needs cold vernalization period to bulb properly.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [9, 10, 11] },
+      6: { indoorStart: [],        transplant: [],         directSow: [9, 10, 11] },
+      7: { indoorStart: [],        transplant: [],         directSow: [10, 11] },
+      8: { indoorStart: [],        transplant: [],         directSow: [10, 11, 12] },
+      9: { indoorStart: [],        transplant: [],         directSow: [10, 11, 12] },
+    },
+  },
+
+  {
+    id: 'radish',
+    name: 'Radish',
+    emoji: '🌰',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 85],
+    airTemp:  [45, 65],
+    sowDepth: 0.5,
+    daysToHarvest: [22, 35],
+    notes: 'Fastest garden vegetable. Direct sow every 2 weeks spring and fall for continuous harvest.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [4, 5, 8, 9] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9, 10] },
+      7: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9, 10] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+    },
+  },
+
+  {
+    id: 'pea',
+    name: 'Pea',
+    emoji: '🫛',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [40, 75],
+    airTemp:  [45, 70],
+    sowDepth: 1,
+    daysToHarvest: [60, 70],
+    notes: 'Plant as early as soil can be worked. Peas hate heat — they finish before summer arrives.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+      6: { indoorStart: [],        transplant: [],         directSow: [2, 3, 4] },
+      7: { indoorStart: [],        transplant: [],         directSow: [2, 3] },
+      8: { indoorStart: [],        transplant: [],         directSow: [1, 2, 10, 11] },
+      9: { indoorStart: [],        transplant: [],         directSow: [1, 2, 10, 11] },
+    },
+  },
+
+  {
+    id: 'beet',
+    name: 'Beet',
+    emoji: '🫚',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [50, 85],
+    airTemp:  [50, 75],
+    sowDepth: 0.5,
+    daysToHarvest: [55, 70],
+    notes: 'Direct sow preferred. Each "seed" is actually a cluster — thin to 3–4" apart.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [4, 5, 7, 8] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+    },
+  },
+
+  {
+    id: 'squash',
+    name: 'Winter Squash',
+    emoji: '🎃',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [60, 95],
+    airTemp:  [65, 85],
+    sowDepth: 1,
+    daysToHarvest: [80, 110],
+    notes: 'Start indoors 2–3 weeks max — squash gets root-bound fast. Needs full season of heat.',
+    zones: {
+      5: { indoorStart: [4, 5],    transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [4],       transplant: [5],       directSow: [5] },
+      7: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+    },
+  },
+
+  {
+    id: 'sweet-corn',
+    name: 'Sweet Corn',
+    emoji: '🌽',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [60, 95],
+    airTemp:  [65, 90],
+    sowDepth: 1,
+    daysToHarvest: [65, 90],
+    notes: 'Direct sow only. Plant in blocks (not rows) of at least 4×4 for good pollination.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [5, 6] },
+      6: { indoorStart: [],        transplant: [],         directSow: [4, 5, 6] },
+      7: { indoorStart: [],        transplant: [],         directSow: [4, 5, 6] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+    },
+  },
+
+  {
+    id: 'swiss-chard',
+    name: 'Swiss Chard',
+    emoji: '🌱',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [50, 85],
+    airTemp:  [45, 75],
+    sowDepth: 0.5,
+    daysToHarvest: [50, 60],
+    notes: 'Tolerates light frost and mild heat — one of the most forgiving vegetables for long harvests.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [4, 5, 7, 8] },
+      6: { indoorStart: [3],       transplant: [4],        directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4, 8, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+    },
+  },
+
+  {
+    id: 'eggplant',
+    name: 'Eggplant',
+    emoji: '🍆',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [75, 90],
+    airTemp:  [70, 90],
+    sowDepth: 0.25,
+    daysToHarvest: [70, 85],
+    notes: 'Even more heat-loving than peppers. Needs 8–10 weeks indoors; do not rush transplant.',
+    zones: {
+      5: { indoorStart: [3],       transplant: [6],       directSow: [] },
+      6: { indoorStart: [2, 3],    transplant: [5, 6],    directSow: [] },
+      7: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [] },
+      8: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [] },
+      9: { indoorStart: [1],       transplant: [3],       directSow: [] },
+    },
+  },
+
+  {
+    id: 'basil',
+    name: 'Basil',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [65, 85],
+    sowDepth: 0.13,
+    daysToHarvest: [60, 90],
+    notes: 'Extremely frost sensitive. Even a light frost blackens leaves. Start indoors or direct sow well after last frost.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [6],       directSow: [6] },
+      6: { indoorStart: [3, 4],    transplant: [5],       directSow: [5] },
+      7: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [2],       transplant: [3, 4],    directSow: [3, 4] },
+      9: { indoorStart: [1, 2],    transplant: [3],       directSow: [3, 4] },
+    },
+  },
+
+  // ── FLOWERS (10) ────────────────────────────────────────────────────────────
+
+  {
+    id: 'sunflower',
+    name: 'Sunflower',
+    emoji: '🌻',
+    type: 'flower',
+    frostSensitive: true,
+    soilTemp: [55, 85],
+    airTemp:  [65, 85],
+    sowDepth: 1,
+    daysToHarvest: [70, 100],
+    notes: 'Direct sow preferred — taproots dislike disturbance. Plant where they will not shade other crops.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [5, 6] },
+      6: { indoorStart: [],        transplant: [],         directSow: [4, 5, 6] },
+      7: { indoorStart: [],        transplant: [],         directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+    },
+  },
+
+  {
+    id: 'marigold',
+    name: 'Marigold',
+    emoji: '🌼',
+    type: 'flower',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [65, 85],
+    sowDepth: 0.13,
+    daysToHarvest: [50, 60],
+    notes: 'Excellent companion plant — repels aphids and nematodes. Start indoors for earlier bloom.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [3, 4],    transplant: [5],       directSow: [4, 5] },
+      7: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [2],       transplant: [3, 4],    directSow: [3, 4] },
+      9: { indoorStart: [1, 2],    transplant: [3],       directSow: [3, 4] },
+    },
+  },
+
+  {
+    id: 'lavender',
+    name: 'Lavender',
+    emoji: '💜',
+    type: 'flower',
+    frostSensitive: false,
+    soilTemp: [65, 70],
+    airTemp:  [60, 80],
+    sowDepth: 0.13,
+    daysToHarvest: [90, 200],
+    notes: 'Very slow from seed (90+ days). Purchase transplants for first year; drought-tolerant once established.',
+    zones: {
+      5: { indoorStart: [1, 2],    transplant: [4, 5],    directSow: [] },
+      6: { indoorStart: [1, 2],    transplant: [4, 5],    directSow: [] },
+      7: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [] },
+      8: { indoorStart: [1],       transplant: [3, 4],    directSow: [] },
+      9: { indoorStart: [1],       transplant: [2, 3],    directSow: [] },
+    },
+  },
+
+  {
+    id: 'zinnia',
+    name: 'Zinnia',
+    emoji: '🌸',
+    type: 'flower',
+    frostSensitive: true,
+    soilTemp: [70, 85],
+    airTemp:  [70, 90],
+    sowDepth: 0.25,
+    daysToHarvest: [60, 70],
+    notes: 'One of the easiest flowers to direct sow. Thrives in heat; cut and come again for weeks.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [3, 4],    transplant: [5],       directSow: [5] },
+      7: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+    },
+  },
+
+  {
+    id: 'cosmos',
+    name: 'Cosmos',
+    emoji: '🌺',
+    type: 'flower',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [60, 80],
+    sowDepth: 0.13,
+    daysToHarvest: [60, 90],
+    notes: 'Self-seeds prolifically. Prefers poor soil — too much fertility makes bushy plants with few flowers.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [4, 5] },
+      7: { indoorStart: [3],       transplant: [4],        directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+    },
+  },
+
+  {
+    id: 'dahlia',
+    name: 'Dahlia',
+    emoji: '🌷',
+    type: 'flower',
+    frostSensitive: true,
+    soilTemp: [60, 70],
+    airTemp:  [60, 80],
+    sowDepth: 2,
+    daysToHarvest: [90, 120],
+    notes: 'Plant tubers after last frost 4–6" deep with eyes facing up. Dig and store tubers before first fall frost.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [5, 6],    directSow: [5] },
+      6: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      7: { indoorStart: [2, 3],    transplant: [4],        directSow: [4] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+    },
+  },
+
+  {
+    id: 'nasturtium',
+    name: 'Nasturtium',
+    emoji: '🌼',
+    type: 'flower',
+    frostSensitive: true,
+    soilTemp: [55, 75],
+    airTemp:  [55, 75],
+    sowDepth: 0.5,
+    daysToHarvest: [35, 52],
+    notes: 'Edible flowers and leaves. Direct sow preferred; hates transplanting. Soak seeds overnight to speed germination.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [5, 6] },
+      6: { indoorStart: [],        transplant: [],         directSow: [4, 5] },
+      7: { indoorStart: [],        transplant: [],         directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+    },
+  },
+
+  {
+    id: 'echinacea',
+    name: 'Echinacea (Coneflower)',
+    emoji: '🌸',
+    type: 'flower',
+    frostSensitive: false,
+    soilTemp: [65, 75],
+    airTemp:  [60, 80],
+    sowDepth: 0.13,
+    daysToHarvest: [120, 180],
+    notes: 'Perennial. Cold stratification improves germination — refrigerate seeds 3 weeks before sowing.',
+    zones: {
+      5: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [3, 4, 10] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4, 10] },
+      7: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [2, 3, 10] },
+      8: { indoorStart: [1],       transplant: [3],        directSow: [10, 11] },
+      9: { indoorStart: [1],       transplant: [2, 3],    directSow: [10, 11] },
+    },
+  },
+
+  {
+    id: 'black-eyed-susan',
+    name: 'Black-Eyed Susan',
+    emoji: '🌻',
+    type: 'flower',
+    frostSensitive: false,
+    soilTemp: [70, 75],
+    airTemp:  [60, 80],
+    sowDepth: 0.13,
+    daysToHarvest: [60, 90],
+    notes: 'Native perennial; extremely drought-tolerant once established. Winter-sow or direct sow in early spring.',
+    zones: {
+      5: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [4, 5] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4] },
+      7: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [3, 4] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10] },
+    },
+  },
+
+  {
+    id: 'sweet-pea',
+    name: 'Sweet Pea',
+    emoji: '🌷',
+    type: 'flower',
+    frostSensitive: false,
+    soilTemp: [50, 65],
+    airTemp:  [45, 65],
+    sowDepth: 1,
+    daysToHarvest: [60, 90],
+    notes: 'Cool-season annual; dies in summer heat. Soak seeds 24 hrs before sowing. Sow as early as soil can be worked.',
+    zones: {
+      5: { indoorStart: [2, 3],    transplant: [4],        directSow: [3, 4] },
+      6: { indoorStart: [1, 2],    transplant: [3],        directSow: [2, 3] },
+      7: { indoorStart: [1],       transplant: [2, 3],    directSow: [2, 3] },
+      8: { indoorStart: [11, 12],  transplant: [1, 2],    directSow: [1, 11, 12] },
+      9: { indoorStart: [11],      transplant: [12, 1],   directSow: [11, 12] },
+    },
+  },
+  // ── UNCOMMON VEGETABLES (15) ────────────────────────────────────────────────
+
+  {
+    id: 'kohlrabi',
+    name: 'Kohlrabi',
+    emoji: '🫛',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 85],
+    airTemp:  [45, 75],
+    sowDepth: 0.25,
+    daysToHarvest: [45, 60],
+    notes: 'Harvest when bulb is golf-ball to tennis-ball size — larger gets woody and bitter.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [4, 5, 7, 8] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4, 8, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+    },
+  },
+
+  {
+    id: 'celeriac',
+    name: 'Celeriac',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [60, 70],
+    airTemp:  [60, 75],
+    sowDepth: 0.13,
+    daysToHarvest: [110, 120],
+    notes: 'One of the slowest vegetables — start 10–12 weeks indoors. Tiny seeds need light to germinate; press onto soil surface.',
+    zones: {
+      5: { indoorStart: [2, 3],    transplant: [5],        directSow: [] },
+      6: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [] },
+      7: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [] },
+      8: { indoorStart: [1],       transplant: [3],        directSow: [] },
+      9: { indoorStart: [1],       transplant: [2, 3],    directSow: [] },
+    },
+  },
+
+  {
+    id: 'fennel',
+    name: 'Fennel (Bulbing)',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [50, 85],
+    airTemp:  [55, 75],
+    sowDepth: 0.25,
+    daysToHarvest: [65, 90],
+    notes: 'Direct sow preferred; dislikes transplanting. Keep away from tomatoes and peppers — allelopathic.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [4, 5, 7, 8] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9, 10] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+    },
+  },
+
+  {
+    id: 'okra',
+    name: 'Okra',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [65, 95],
+    airTemp:  [75, 95],
+    sowDepth: 1,
+    daysToHarvest: [50, 65],
+    notes: 'Soak seeds 12–24 hrs before sowing. Harvest pods every 2–3 days at 3–4" or they toughen quickly.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [6],        directSow: [6] },
+      6: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      7: { indoorStart: [3],       transplant: [5],        directSow: [5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [4, 5] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+    },
+  },
+
+  {
+    id: 'tomatillo',
+    name: 'Tomatillo',
+    emoji: '🍈',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [65, 85],
+    sowDepth: 0.25,
+    daysToHarvest: [65, 75],
+    notes: 'Plant at least two for pollination — they are self-incompatible. Harvest when husk splits.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [5, 6],    directSow: [] },
+      6: { indoorStart: [3, 4],    transplant: [5],        directSow: [] },
+      7: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [1, 2],    transplant: [3, 4],    directSow: [3, 4] },
+      9: { indoorStart: [1],       transplant: [3],        directSow: [3] },
+    },
+  },
+
+  {
+    id: 'bok-choy',
+    name: 'Bok Choy',
+    emoji: '🥬',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 75],
+    airTemp:  [45, 70],
+    sowDepth: 0.25,
+    daysToHarvest: [45, 60],
+    notes: 'Extremely fast cool-season crop. Bolts in heat — time sowing to mature before summer or after the hottest weeks.',
+    zones: {
+      5: { indoorStart: [3],       transplant: [4],        directSow: [4, 5, 8, 9] },
+      6: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [2],       transplant: [3],        directSow: [3, 4, 9, 10] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+    },
+  },
+
+  {
+    id: 'ground-cherry',
+    name: 'Ground Cherry',
+    emoji: '🍊',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [65, 85],
+    sowDepth: 0.13,
+    daysToHarvest: [70, 80],
+    notes: 'Related to tomatillo. Fruit falls in its papery husk when ripe — harvest from the ground, not the plant.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [5, 6],    directSow: [] },
+      6: { indoorStart: [3, 4],    transplant: [5],        directSow: [] },
+      7: { indoorStart: [2, 3],    transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [2],       transplant: [3, 4],    directSow: [3, 4] },
+      9: { indoorStart: [1],       transplant: [3],        directSow: [3] },
+    },
+  },
+
+  {
+    id: 'radicchio',
+    name: 'Radicchio',
+    emoji: '🥬',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 75],
+    airTemp:  [45, 65],
+    sowDepth: 0.13,
+    daysToHarvest: [65, 80],
+    notes: 'Bitter flavor sweetens after light frost. Cut back spent summer plants — they often resprout for fall harvest.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [7, 8] },
+      6: { indoorStart: [3],       transplant: [4],        directSow: [7, 8] },
+      7: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [8, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [8, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [9, 10] },
+    },
+  },
+
+  {
+    id: 'mizuna',
+    name: 'Mizuna',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [40, 75],
+    airTemp:  [40, 68],
+    sowDepth: 0.13,
+    daysToHarvest: [20, 40],
+    notes: 'One of the fastest salad greens. Cut-and-come-again; regrows from base 3–4 times before bolting.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5, 8, 9] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9, 10] },
+      7: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10, 11] },
+      9: { indoorStart: [],        transplant: [],         directSow: [1, 2, 10, 11] },
+    },
+  },
+
+  {
+    id: 'sunchoke',
+    name: 'Jerusalem Artichoke',
+    emoji: '🌻',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [50, 75],
+    airTemp:  [50, 80],
+    sowDepth: 4,
+    daysToHarvest: [120, 150],
+    notes: 'Plant tubers like potatoes. Extremely vigorous — give it a dedicated bed. Harvest after first frost sweetens the tubers.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+      7: { indoorStart: [],        transplant: [],         directSow: [2, 3, 4] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3] },
+      9: { indoorStart: [],        transplant: [],         directSow: [1, 2] },
+    },
+  },
+
+  {
+    id: 'watermelon-radish',
+    name: 'Watermelon Radish',
+    emoji: '🌸',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 75],
+    airTemp:  [45, 65],
+    sowDepth: 0.5,
+    daysToHarvest: [50, 60],
+    notes: 'A daikon-type radish — much larger and slower than common radishes. Green outside, vivid pink inside. Direct sow only.',
+    zones: {
+      5: { indoorStart: [],        transplant: [],         directSow: [4, 5, 8] },
+      6: { indoorStart: [],        transplant: [],         directSow: [3, 4, 8, 9] },
+      7: { indoorStart: [],        transplant: [],         directSow: [3, 4, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+    },
+  },
+
+  {
+    id: 'amaranth',
+    name: 'Amaranth (Grain/Leaf)',
+    emoji: '🌾',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [70, 90],
+    sowDepth: 0.13,
+    daysToHarvest: [50, 100],
+    notes: 'Dual-purpose: harvest young leaves as greens or let it mature for grain seed. Heat- and drought-tolerant once established.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [3, 4],    transplant: [5],        directSow: [5] },
+      7: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [4, 5] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4, 5] },
+    },
+  },
+
+  {
+    id: 'shiso',
+    name: 'Shiso (Perilla)',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: true,
+    soilTemp: [65, 85],
+    airTemp:  [65, 85],
+    sowDepth: 0.13,
+    daysToHarvest: [60, 80],
+    notes: 'Cold stratify seeds in the fridge for a week before sowing. Self-seeds prolifically once established in the garden.',
+    zones: {
+      5: { indoorStart: [4],       transplant: [5, 6],    directSow: [5, 6] },
+      6: { indoorStart: [3, 4],    transplant: [5],        directSow: [5] },
+      7: { indoorStart: [3],       transplant: [4, 5],    directSow: [4, 5] },
+      8: { indoorStart: [],        transplant: [],         directSow: [4, 5] },
+      9: { indoorStart: [],        transplant: [],         directSow: [3, 4] },
+    },
+  },
+
+  {
+    id: 'romanesco',
+    name: 'Romanesco',
+    emoji: '🥦',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [45, 85],
+    airTemp:  [45, 65],
+    sowDepth: 0.5,
+    daysToHarvest: [75, 100],
+    notes: 'Longer season than regular broccoli. Needs consistent cool temps for its iconic fractal head to form properly.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [5],        directSow: [7] },
+      6: { indoorStart: [2, 3],    transplant: [4],        directSow: [7, 8] },
+      7: { indoorStart: [2, 3],    transplant: [3, 4],    directSow: [8] },
+      8: { indoorStart: [8],       transplant: [9, 10],   directSow: [9, 10] },
+      9: { indoorStart: [8],       transplant: [9, 10],   directSow: [9, 10] },
+    },
+  },
+
+  {
+    id: 'sorrel',
+    name: 'Sorrel',
+    emoji: '🌿',
+    type: 'vegetable',
+    frostSensitive: false,
+    soilTemp: [60, 75],
+    airTemp:  [50, 75],
+    sowDepth: 0.25,
+    daysToHarvest: [60, 70],
+    notes: 'Hardy perennial herb/green — plant once, harvest for years. Tart lemony leaves are excellent in soups and salads.',
+    zones: {
+      5: { indoorStart: [3, 4],    transplant: [4, 5],    directSow: [4, 5] },
+      6: { indoorStart: [3],       transplant: [4],        directSow: [3, 4, 9] },
+      7: { indoorStart: [2],       transplant: [3, 4],    directSow: [3, 4, 9] },
+      8: { indoorStart: [],        transplant: [],         directSow: [2, 3, 9, 10] },
+      9: { indoorStart: [],        transplant: [],         directSow: [2, 3, 10] },
+    },
+  },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Allow Enter key on zip input
+document.getElementById('zip').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleSubmit();
+});
+
+// Pre-select current month
+(function() {
+  const now = new Date();
+  document.getElementById('month').value = String(now.getMonth() + 1);
+})();
+</script>
+
+</body>
+</html>
