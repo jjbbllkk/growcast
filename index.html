@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PlantWise — Know When to Plant</title>
+  <title>GrowCast — Know When to Plant</title>
   <style>
     /* ── Reset & Base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1043,7 +1043,7 @@
 <body>
 
 <header>
-  <div class="logo">🌱 Plant<span>Wise</span></div>
+  <div class="logo">🌱 Grow<span>Cast</span></div>
   <div class="tagline">Know exactly when to sow, grow, and harvest.</div>
   <div class="plant-growth" aria-hidden="true">
     <div class="pg-stem"></div>
@@ -3134,14 +3134,14 @@ document.getElementById('zip').addEventListener('keydown', e => {
 // Persist zip code in localStorage
 const zipEl = document.getElementById('zip');
 zipEl.addEventListener('change', () => {
-  if (/^\d{5}$/.test(zipEl.value)) localStorage.setItem('plantwise_zip', zipEl.value);
+  if (/^\d{5}$/.test(zipEl.value)) localStorage.setItem('growcast_zip', zipEl.value);
 });
 
 // Pre-select current month and restore saved zip
 (function() {
   const now = new Date();
   document.getElementById('month').value = String(now.getMonth() + 1);
-  const saved = localStorage.getItem('plantwise_zip');
+  const saved = localStorage.getItem('growcast_zip');
   if (saved) zipEl.value = saved;
 })();
 </script>
