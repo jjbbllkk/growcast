@@ -575,6 +575,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 0.9rem;
+      align-items: start;
     }
 
     .plant-card {
@@ -850,6 +851,146 @@
       border-radius: 2px;
     }
 
+    /* ── Collapsible Plant Card Details ─────────────── */
+    /* Desktop: details always visible */
+    .plant-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Chevron shown only on mobile */
+    .card-chevron {
+      display: none;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+      line-height: 1;
+      padding-left: 0.2rem;
+    }
+    .plant-card.expanded .card-chevron { transform: rotate(90deg); }
+
+    /* Tiny action hint shown only on mobile (compact state) */
+    .action-hint-mini {
+      display: none;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.13rem 0.48rem;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      align-items: center;
+      line-height: 1.5;
+    }
+    .action-hint-mini.direct     { background: var(--green-pale);  color: var(--green-dark); }
+    .action-hint-mini.indoor     { background: #e8d5f5;            color: #5a2080; }
+    .action-hint-mini.transplant { background: #d5e8f5;            color: #1a5080; }
+    .action-hint-mini.wait-hint  { background: var(--cream-dark);  color: var(--text-muted); }
+
+    @media (max-width: 640px) {
+      .card-chevron       { display: inline-block; }
+      .action-hint-mini   { display: inline-flex; }
+
+      /* Compact by default */
+      .plant-details {
+        display: none;
+        overflow: hidden;
+      }
+      .plant-card.expanded .plant-details {
+        display: flex;
+        animation: detailsIn 0.18s ease;
+      }
+      @keyframes detailsIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: none; }
+      }
+
+      /* Tighter card */
+      .plant-card { padding: 0.7rem 0.75rem; gap: 0; }
+      .plant-card-top { cursor: pointer; padding-bottom: 0; user-select: none; }
+      .plant-card.expanded .plant-card-top {
+        padding-bottom: 0.55rem;
+        margin-bottom: 0.4rem;
+        border-bottom: 1px solid var(--cream-dark);
+      }
+      .plant-card.expanded .plant-details { gap: 0.45rem; }
+    }
+
+    /* ── Sun Requirements ───────────────────────────── */
+    .sun-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.64rem;
+      font-weight: 700;
+      margin-top: 0.18rem;
+      letter-spacing: 0.02em;
+    }
+    .sun-tag.sun-full-sun    { color: #9a6c00; }
+    .sun-tag.sun-partial-sun { color: #4a7030; }
+    .sun-tag.sun-full-shade  { color: #3a5878; }
+
+    .sun-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      background: var(--cream);
+      border: 1px solid var(--cream-dark);
+      border-radius: var(--radius-sm);
+      padding: 0.35rem 0.6rem;
+    }
+    .sun-detail b { color: var(--text-dark); }
+    .sun-detail span { color: var(--text-muted); font-size: 0.72rem; }
+
+    /* ── Companion Plant Chips ───────────────────────── */
+    .companion-section {
+      border-top: 1px solid var(--cream-dark);
+      padding-top: 0.5rem;
+    }
+    .companion-group { margin-bottom: 0.4rem; }
+    .companion-group:last-child { margin-bottom: 0; }
+    .companion-label {
+      font-size: 0.67rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.28rem;
+    }
+    .companion-label.good-label { color: var(--green-dark); }
+    .companion-label.bad-label  { color: #8a3020; }
+    .companion-chips { display: flex; flex-wrap: wrap; gap: 0.28rem; }
+    .companion-chip {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.18rem 0.55rem;
+      border-radius: 99px;
+      border: 1.5px solid;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1.5;
+      background: none;
+      font-family: inherit;
+    }
+    .companion-chip.good { border-color: #a3d0ad; color: var(--green-dark); background: #f0f9f1; }
+    .companion-chip.good:hover { background: var(--green-pale); }
+    .companion-chip.bad  { border-color: #f0a8a8; color: #7a2020; background: #fdf4f4; }
+    .companion-chip.bad:hover  { background: #fde8e8; }
+
+    @keyframes cardPulse {
+      0%   { box-shadow: 0 0 0 0   rgba(74,124,63,0.5); outline-color: var(--green-mid); }
+      45%  { box-shadow: 0 0 0 8px rgba(74,124,63,0.2); outline-color: var(--green-mid); }
+      100% { box-shadow: 0 0 0 0   rgba(74,124,63,0);   outline-color: transparent; }
+    }
+    .plant-card.highlighted {
+      outline: 2px solid var(--green-mid);
+      outline-offset: 2px;
+      animation: cardPulse 1.6s ease forwards;
+    }
+
     /* ── Mobile Responsive ───────────────────────────── */
     @media (max-width: 640px) {
       main { padding: 1.1rem 0.85rem 3rem; }
@@ -873,14 +1014,14 @@
       .current-temp { font-size: 2.4rem; }
       .current-stats { gap: 0.85rem; }
 
-      .plant-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 0.7rem; }
+      .plant-grid { grid-template-columns: 1fr; gap: 0.7rem; }
       .section-heading { font-size: 0.88rem; }
       .filter-bar { padding: 0.6rem 0.75rem; gap: 0.5rem; }
       .filter-search { font-size: 0.85rem; min-width: 120px; }
     }
     @media (max-width: 420px) {
       .logo { font-size: 1.85rem; }
-      .plant-grid { grid-template-columns: 1fr 1fr; }
+      .plant-grid { grid-template-columns: 1fr; }
       .filter-type-group { width: 100%; }
       .rec-group-badge { font-size: 0.72rem; padding: 0.25rem 0.7rem; }
     }
@@ -1720,6 +1861,23 @@ function buildWhyText(plant, result) {
   return parts.join(' ');
 }
 
+// ─── Card Expand / Collapse (mobile) ─────────────────────────────────────────
+function toggleCard(card) {
+  card.classList.toggle('expanded');
+}
+
+// ─── Companion Plant Navigation ───────────────────────────────────────────────
+function highlightPlant(id) {
+  const card = document.querySelector(`.plant-card[data-id="${id}"]`);
+  if (!card) return;
+  card.classList.add('expanded');          // expand on mobile
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.remove('highlighted');
+  void card.offsetWidth;                   // force reflow to restart animation
+  card.classList.add('highlighted');
+  setTimeout(() => card.classList.remove('highlighted'), 1700);
+}
+
 // ─── Tooltip Toggle ───────────────────────────────────────────────────────────
 function toggleWhy(btn) {
   const card    = btn.closest('.plant-card');
@@ -1837,19 +1995,52 @@ function renderRecommendations(scored, frostInfo) {
         return `<span class="${cls}"><b>${ico}</b> ${r.text}</span>`;
       }).join('');
 
+      const hintCls   = actions[0] ? actions[0].cls : 'wait-hint';
+      const hintLabel = actions[0] ? actions[0].label : 'Wait';
+
+      // Sun requirement
+      const sunReq = SUN_REQUIREMENTS[plant.id] ?? 'full-sun';
+      const SUN_META = {
+        'full-sun':    { icon: '☀️',  label: 'Full sun',    hours: '6+ hrs/day' },
+        'partial-sun': { icon: '⛅',  label: 'Partial sun', hours: '3–6 hrs/day' },
+        'full-shade':  { icon: '🌥️', label: 'Full shade',  hours: 'under 3 hrs/day' },
+      };
+      const sun = SUN_META[sunReq];
+
+      // Build companion chips
+      const comp = COMPANIONS[plant.id] ?? { with: [], avoid: [] };
+      const makeChips = (ids, cls) => ids
+        .map(id => { const p = PLANT_MAP[id]; return p ? `<button class="companion-chip ${cls}" onclick="highlightPlant('${id}')">${p.emoji} ${p.name}</button>` : ''; })
+        .filter(Boolean).join('');
+      const withChips  = makeChips(comp.with,  'good');
+      const avoidChips = makeChips(comp.avoid, 'bad');
+      const companionHTML = (withChips || avoidChips) ? `
+        <div class="companion-section">
+          ${withChips  ? `<div class="companion-group"><div class="companion-label good-label">🤝 Good with</div><div class="companion-chips">${withChips}</div></div>`  : ''}
+          ${avoidChips ? `<div class="companion-group"><div class="companion-label bad-label">⚠ Keep away from</div><div class="companion-chips">${avoidChips}</div></div>` : ''}
+        </div>` : '';
+
+      card.dataset.id = plant.id;
       card.innerHTML = `
-        <div class="plant-card-top">
+        <div class="plant-card-top" onclick="toggleCard(this.closest('.plant-card'))">
           <span class="plant-emoji">${plant.emoji}</span>
           <div style="flex:1;min-width:0">
             <div class="plant-name">${plant.name}</div>
             <div class="plant-type-tag">${plant.type}</div>
+            <div class="sun-tag sun-${sunReq}">${sun.icon} ${sun.label}</div>
+            <span class="action-hint-mini ${hintCls}">${hintLabel}</span>
           </div>
-          <button class="why-btn" onclick="toggleWhy(this)" aria-label="Explain recommendation">Why?</button>
+          <span class="card-chevron" aria-hidden="true">›</span>
         </div>
-        <div class="why-tooltip">${whyText}</div>
-        <div class="plant-action">${actionHTML}</div>
-        <div class="plant-reasons">${reasonHTML}</div>
-        <div class="plant-notes">${plant.notes}</div>
+        <div class="plant-details">
+          <div class="sun-detail">${sun.icon} <b>${sun.label}</b> — <span>${sun.hours} of direct sunlight daily</span></div>
+          <div class="plant-action">${actionHTML}</div>
+          <div class="plant-reasons">${reasonHTML}</div>
+          <div class="plant-notes">${plant.notes}</div>
+          ${companionHTML}
+          <button class="why-btn" onclick="toggleWhy(this)" aria-label="Explain recommendation">Why?</button>
+          <div class="why-tooltip">${whyText}</div>
+        </div>
       `;
       grid.appendChild(card);
     });
@@ -2775,6 +2966,164 @@ const PLANTS = [
     },
   },
 ];
+
+// ─── Companion Planting Lookup ────────────────────────────────────────────────
+// Keys are plant IDs. `with` = beneficial companions. `avoid` = antagonists.
+// Only references IDs that exist in the PLANTS array above.
+const COMPANIONS = {
+  // ── Common Vegetables ────────────────────────────────────────────────────────
+  'tomato':      { with:  ['basil', 'marigold', 'carrot', 'nasturtium', 'garlic'],
+                   avoid: ['fennel', 'sweet-corn'] },
+  'pepper':      { with:  ['basil', 'marigold', 'carrot', 'eggplant'],
+                   avoid: ['fennel'] },
+  'zucchini':    { with:  ['nasturtium', 'marigold', 'sweet-corn', 'green-bean'],
+                   avoid: [] },
+  'carrot':      { with:  ['onion', 'garlic', 'tomato', 'lettuce', 'radish'],
+                   avoid: [] },
+  'lettuce':     { with:  ['carrot', 'radish', 'garlic', 'onion', 'spinach'],
+                   avoid: [] },
+  'spinach':     { with:  ['pea', 'green-bean', 'lettuce', 'radish'],
+                   avoid: [] },
+  'cucumber':    { with:  ['nasturtium', 'marigold', 'sunflower', 'pea', 'green-bean'],
+                   avoid: ['fennel'] },
+  'green-bean':  { with:  ['carrot', 'cucumber', 'nasturtium', 'sweet-corn', 'squash'],
+                   avoid: ['onion', 'garlic', 'beet'] },
+  'broccoli':    { with:  ['onion', 'garlic', 'nasturtium', 'marigold', 'beet'],
+                   avoid: ['tomato'] },
+  'kale':        { with:  ['onion', 'garlic', 'marigold', 'nasturtium', 'beet'],
+                   avoid: ['tomato'] },
+  'onion':       { with:  ['carrot', 'beet', 'lettuce', 'tomato'],
+                   avoid: ['green-bean', 'pea'] },
+  'garlic':      { with:  ['tomato', 'pepper', 'carrot', 'beet'],
+                   avoid: ['green-bean', 'pea'] },
+  'radish':      { with:  ['lettuce', 'carrot', 'cucumber', 'nasturtium', 'pea'],
+                   avoid: [] },
+  'pea':         { with:  ['carrot', 'radish', 'lettuce', 'spinach', 'sweet-corn'],
+                   avoid: ['onion', 'garlic'] },
+  'beet':        { with:  ['onion', 'garlic', 'lettuce', 'broccoli', 'kale'],
+                   avoid: ['green-bean'] },
+  'squash':      { with:  ['sweet-corn', 'green-bean', 'nasturtium', 'marigold'],
+                   avoid: [] },
+  'sweet-corn':  { with:  ['squash', 'green-bean', 'cucumber', 'sunflower', 'pea'],
+                   avoid: ['tomato'] },
+  'swiss-chard': { with:  ['onion', 'garlic', 'beet', 'kale'],
+                   avoid: [] },
+  'eggplant':    { with:  ['basil', 'marigold', 'tomato', 'pepper'],
+                   avoid: ['fennel'] },
+  'basil':       { with:  ['tomato', 'pepper', 'marigold', 'eggplant'],
+                   avoid: ['fennel'] },
+
+  // ── Uncommon Vegetables ──────────────────────────────────────────────────────
+  'kohlrabi':          { with:  ['onion', 'beet', 'nasturtium', 'marigold'],
+                         avoid: ['tomato'] },
+  'celeriac':          { with:  ['onion', 'garlic', 'broccoli', 'lettuce'],
+                         avoid: [] },
+  'fennel':            { with:  [],
+                         avoid: ['tomato', 'pepper', 'basil', 'eggplant', 'carrot', 'green-bean'] },
+  'okra':              { with:  ['basil', 'sunflower', 'pepper', 'zinnia', 'sweet-corn'],
+                         avoid: [] },
+  'tomatillo':         { with:  ['basil', 'marigold', 'nasturtium', 'carrot'],
+                         avoid: ['fennel'] },
+  'bok-choy':          { with:  ['onion', 'garlic', 'marigold', 'nasturtium'],
+                         avoid: ['tomato'] },
+  'ground-cherry':     { with:  ['basil', 'marigold', 'nasturtium', 'carrot'],
+                         avoid: ['fennel'] },
+  'radicchio':         { with:  ['onion', 'garlic', 'carrot', 'radish'],
+                         avoid: [] },
+  'mizuna':            { with:  ['onion', 'garlic', 'marigold', 'radish'],
+                         avoid: ['tomato'] },
+  'sunchoke':          { with:  ['sweet-corn', 'sunflower', 'squash'],
+                         avoid: [] },
+  'watermelon-radish': { with:  ['lettuce', 'carrot', 'cucumber', 'nasturtium'],
+                         avoid: [] },
+  'amaranth':          { with:  ['sweet-corn', 'basil', 'onion', 'squash'],
+                         avoid: [] },
+  'shiso':             { with:  ['tomato', 'pepper', 'eggplant', 'basil'],
+                         avoid: [] },
+  'romanesco':         { with:  ['onion', 'garlic', 'marigold', 'nasturtium'],
+                         avoid: ['tomato'] },
+  'sorrel':            { with:  ['lettuce', 'radish', 'carrot', 'swiss-chard'],
+                         avoid: [] },
+
+  // ── Flowers ──────────────────────────────────────────────────────────────────
+  'sunflower':         { with:  ['cucumber', 'squash', 'sweet-corn', 'okra'],
+                         avoid: ['fennel'] },
+  'marigold':          { with:  ['tomato', 'pepper', 'basil', 'cucumber', 'eggplant', 'squash'],
+                         avoid: ['green-bean'] },
+  'lavender':          { with:  ['echinacea', 'zinnia', 'cosmos', 'black-eyed-susan'],
+                         avoid: [] },
+  'zinnia':            { with:  ['tomato', 'cucumber', 'okra', 'lavender', 'cosmos'],
+                         avoid: [] },
+  'cosmos':            { with:  ['tomato', 'cucumber', 'lavender', 'zinnia'],
+                         avoid: [] },
+  'dahlia':            { with:  ['tomato', 'zinnia', 'cosmos'],
+                         avoid: [] },
+  'nasturtium':        { with:  ['tomato', 'cucumber', 'zucchini', 'green-bean', 'broccoli', 'kale', 'radish'],
+                         avoid: [] },
+  'echinacea':         { with:  ['lavender', 'black-eyed-susan', 'cosmos', 'zinnia'],
+                         avoid: [] },
+  'black-eyed-susan':  { with:  ['echinacea', 'lavender', 'zinnia'],
+                         avoid: [] },
+  'sweet-pea':         { with:  ['radish', 'lettuce', 'carrot', 'spinach'],
+                         avoid: ['onion', 'garlic'] },
+};
+
+// Fast ID → plant object lookup (built after PLANTS is defined)
+const PLANT_MAP = Object.fromEntries(PLANTS.map(p => [p.id, p]));
+
+// ─── Sun Requirements ─────────────────────────────────────────────────────────
+// Values: 'full-sun' | 'partial-sun' | 'full-shade'
+const SUN_REQUIREMENTS = {
+  // Common vegetables
+  'tomato':            'full-sun',
+  'pepper':            'full-sun',
+  'cucumber':          'full-sun',
+  'zucchini':          'full-sun',
+  'squash':            'full-sun',
+  'sweet-corn':        'full-sun',
+  'green-bean':        'full-sun',
+  'pea':               'partial-sun',
+  'lettuce':           'partial-sun',
+  'spinach':           'partial-sun',
+  'kale':              'partial-sun',
+  'broccoli':          'partial-sun',
+  'swiss-chard':       'partial-sun',
+  'carrot':            'full-sun',
+  'radish':            'full-sun',
+  'beet':              'full-sun',
+  'onion':             'full-sun',
+  'garlic':            'full-sun',
+  'eggplant':          'full-sun',
+  'basil':             'full-sun',
+  // Uncommon vegetables
+  'kohlrabi':          'full-sun',
+  'celeriac':          'full-sun',
+  'fennel':            'full-sun',
+  'okra':              'full-sun',
+  'tomatillo':         'full-sun',
+  'bok-choy':          'partial-sun',
+  'ground-cherry':     'full-sun',
+  'radicchio':         'partial-sun',
+  'mizuna':            'partial-sun',
+  'sunchoke':          'full-sun',
+  'watermelon-radish': 'partial-sun',
+  'amaranth':          'full-sun',
+  'shiso':             'partial-sun',
+  'romanesco':         'partial-sun',
+  'sorrel':            'partial-sun',
+  // Flowers
+  'sunflower':         'full-sun',
+  'marigold':          'full-sun',
+  'lavender':          'full-sun',
+  'zinnia':            'full-sun',
+  'cosmos':            'full-sun',
+  'dahlia':            'full-sun',
+  'nasturtium':        'full-sun',
+  'echinacea':         'full-sun',
+  'black-eyed-susan':  'full-sun',
+  'sweet-pea':         'partial-sun',
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Allow Enter key on zip input
@@ -2782,10 +3131,18 @@ document.getElementById('zip').addEventListener('keydown', e => {
   if (e.key === 'Enter') handleSubmit();
 });
 
-// Pre-select current month
+// Persist zip code in localStorage
+const zipEl = document.getElementById('zip');
+zipEl.addEventListener('change', () => {
+  if (/^\d{5}$/.test(zipEl.value)) localStorage.setItem('plantwise_zip', zipEl.value);
+});
+
+// Pre-select current month and restore saved zip
 (function() {
   const now = new Date();
   document.getElementById('month').value = String(now.getMonth() + 1);
+  const saved = localStorage.getItem('plantwise_zip');
+  if (saved) zipEl.value = saved;
 })();
 </script>
 
